@@ -20,11 +20,11 @@ public class File_Info {
         public String getFileName(){
             return this.FileName;
         }
-    private String FileHash;
-        private void setFileHash(String hash){
+    private int FileHash;
+        private void setFileHash(int hash){
             this.FileHash = hash;
         }
-        public String getFileHash(){
+        public int getFileHash(){
             return this.FileHash;
         }
     private int FileSize;// don vi kB
@@ -43,7 +43,7 @@ public class File_Info {
         private int getBlockNumber(){
             if(this.FileSize % BLOCK == 0)
                 return (int) (this.FileSize/BLOCK) ;
-            else return (int) (this.FileSize/BLOCK) + 1;
+            else return (int) (this.FileSize) + 1;
         }
     private ArrayList <String> IPList ;//= new ArrayList <String>();
         /* IPList contain IP which client can download from this IP 
@@ -89,7 +89,7 @@ public class File_Info {
             return this.BlockStatus;
         }
         //constructor
-    File_Info(String name, String size, String hash) {
+    File_Info(String name, String size, int hash) {
         IPList = new ArrayList <String>();
         BlockStatus = new int[BLOCK];
         for(int i = 0; i < BLOCK; i++) BlockStatus[i] = -1;
