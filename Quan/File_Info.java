@@ -41,7 +41,9 @@ public class File_Info {
         //get Number of Block
         // 1 block = 64kB = 65536B
         private int getBlockNumber(){
-            return (int) (this.FileSize/64) + 1 ;
+            if(this.FileSize % 64 == 0)
+                return (int) (this.FileSize/64) ;
+            else return (int) (this.FileSize) + 1;
         }
     private ArrayList <String> IPList ;//= new ArrayList <String>();
         /* IPList contain IP which client can download from this IP 
