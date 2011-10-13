@@ -10,7 +10,7 @@
  */
 import java.util.ArrayList;
 public class File_Info {
-
+    public static final int BLOCK = 65536;
     private String FileName;
         //set FileName
         private void setFileName(String name){
@@ -91,8 +91,8 @@ public class File_Info {
         //constructor
     File_Info(String name, String size, String hash) {
         IPList = new ArrayList <String>();
-        BlockStatus = new int[65536];
-        for(int i = 0; i < 65536; i++) BlockStatus[i] = -1;
+        BlockStatus = new int[BLOCK];
+        for(int i = 0; i < BLOCK; i++) BlockStatus[i] = -1;
         this.setFileName(name);
         this.setFileSize(Integer.parseInt(size));
         this.setFileHash(hash);
