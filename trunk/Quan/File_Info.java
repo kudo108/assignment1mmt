@@ -10,7 +10,7 @@
  */
 import java.util.ArrayList;
 public class File_Info {
-    public static final int BLOCK = 65536;
+    public static final int BLOCK_SIZE = 65536;
     private String FileName;
         //set FileName
         private void setFileName(String name){
@@ -41,9 +41,9 @@ public class File_Info {
         //get Number of Block
         // 1 block = 64kB = 65536B
         private int getBlockNumber(){
-            if(this.FileSize % BLOCK == 0)
-                return (int) (this.FileSize/BLOCK) ;
-            else return (int) (this.FileSize) + 1;
+            if(this.FileSize % BLOCK_SIZE == 0)
+                return (int) (this.FileSize/BLOCK_SIZE) ;
+            else return (int) (this.FileSize/BLOCK_SIZE) + 1;
         }
     private ArrayList <String> IPList ;//= new ArrayList <String>();
         /* IPList contain IP which client can download from this IP 
@@ -91,8 +91,8 @@ public class File_Info {
         //constructor
     File_Info(String name, String size, int hash) {
         IPList = new ArrayList <String>();
-        BlockStatus = new int[BLOCK];
-        for(int i = 0; i < BLOCK; i++) BlockStatus[i] = -1;
+        BlockStatus = new int[BLOCK_SIZE];
+        for(int i = 0; i < BLOCK_SIZE; i++) BlockStatus[i] = -1;
         this.setFileName(name);
         this.setFileSize(Integer.parseInt(size));
         this.setFileHash(hash);
