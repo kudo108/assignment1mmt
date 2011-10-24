@@ -1,0 +1,4 @@
+//Chạy bằng command line
+
+java -jar bitcrazyserver.jar
+
