@@ -57,10 +57,10 @@ public class Client {
 
     public Tuple getByHash(int _hash) throws IOException {
         Tuple result = null;
-        writeSocket(String.format("$1%s $2%d", GETFILE_OUTCOMMAND, _hash));
+        writeSocket(String.format("%s %d", GETFILE_OUTCOMMAND, _hash));
         String receivedCommand = streamIn.readUTF();
         if ((receivedCommand == null) || (receivedCommand.equals(NOTFOUND_INCOMMAND))) {
-            System.out.println(String.format("$1%d not found.", _hash));
+            System.out.println(String.format("%d not found.", _hash));
         }
         else {
             String _ip = receivedCommand.substring(0, receivedCommand.indexOf(' ') - 1);
@@ -72,7 +72,7 @@ public class Client {
 
     public Boolean seedFile(int _hash, long _fileSize) throws IOException {
         Boolean result = false;
-        writeSocket(String.format("$1%s $2%d $3%d", STARTSEED_OUTCOMMAND, _hash, _fileSize));
+        writeSocket(String.format("%s %d %d", STARTSEED_OUTCOMMAND, _hash, _fileSize));
         String receivedCommand = streamIn.readUTF();
         if (receivedCommand.equals(SEEDFILE_INCOMMAND)) result = true;
         return result;
@@ -80,7 +80,7 @@ public class Client {
 
     public Boolean stopSeed(int _hash) throws IOException {
         Boolean result = false;
-        writeSocket(String.format("$1%s $2%d", STOPSEED_OUTCOMMAND, _hash));
+        writeSocket(String.format("%s %d", STOPSEED_OUTCOMMAND, _hash));
         String receivedCommand = streamIn.readUTF();
         if (receivedCommand.equals(SEEDFILE_INCOMMAND)) result = true;
         return result;

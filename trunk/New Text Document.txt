@@ -1,4 +1,0 @@
-// Code MMT by BitCrazy Group
-// Teacher : Pham Sy Nam
-
-tôi s?a dòng này << quân thêm
