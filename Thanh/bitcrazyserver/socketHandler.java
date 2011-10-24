@@ -67,12 +67,13 @@ public class socketHandler implements Runnable {
                     if (theTuple == null) {
                         writeSocket(NOTFOUND_OUTCOMMAND);
                     } else {
-                        writeSocket(String.format("$1%s $2%d", theTuple.ip, theTuple.fileSize));
+                        writeSocket(String.format("%s %d", theTuple.ip, theTuple.fileSize));
                     }
                 }
                 else if (receivedCommand.substring(0, 2).equals(STARTSEED_INCOMMAND)) {
                     int _hash = Integer.parseInt(receivedCommand.substring(receivedCommand.indexOf(' ') + 1, receivedCommand.lastIndexOf(' ') - 1));
                     String _ip = theSocket.getInetAddress().toString();
+                    _ip = _ip.substring(_ip.indexOf('/') + 1);
                     long _fileSize = Long.parseLong(receivedCommand.substring(receivedCommand.lastIndexOf(' ') + 1));
                     Tuple theTuple = new Tuple(_hash, _ip, _fileSize);
                     theTupleList.add(theTuple);
@@ -81,6 +82,7 @@ public class socketHandler implements Runnable {
                 else if (receivedCommand.substring(0, 2).equals(STOPSEED_INCOMMAND)) {
                     int _hash = Integer.parseInt(receivedCommand.substring(receivedCommand.indexOf(' ') + 1));
                     String _ip = theSocket.getInetAddress().toString();
+                    _ip = _ip.substring(_ip.indexOf('/') + 1);
                     theTupleList.remove(_hash, _ip);
                     writeSocket(SEEDFILE_OUTCOMMAND);
                 }
