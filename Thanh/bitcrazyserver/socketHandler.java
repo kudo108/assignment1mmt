@@ -7,7 +7,7 @@ import java.net.*;
  *
  * @author T'PHaM
  */
-public class socketHandler implements Runnable {
+public class SocketHandler implements Runnable {
     private static final String END_INCOMMAND       = "END";
     private static final String END_OUTCOMMAND      = "END";
     private static final String GETFILE_INCOMMAND   = "GET";
@@ -22,10 +22,9 @@ public class socketHandler implements Runnable {
     private DataOutputStream streamOut    = null;
     private Thread           theThread    = null;
 
-    public socketHandler(Socket _socket, TupleList _tupleList) {
-        theSocket = _socket;
+    public SocketHandler(Socket _socket, TupleList _tupleList) {
+        theSocket    = _socket;
         theTupleList = _tupleList;
-        System.out.println("Accepted socket: " + theSocket);
     }
 
     public void start() {
@@ -48,30 +47,29 @@ public class socketHandler implements Runnable {
             doMain();
             close();
         } catch (IOException ioe) {
-            System.out.println("Error!");
+            System.out.println("Error SocketHandler!");
             stop();
         }
     }
 
     private void doMain() throws IOException {
         String receivedCommand;
-        while (true) {
-            try {
-                receivedCommand = streamIn.readUTF();
-                System.out.println("Received: " + receivedCommand);
+        try {
+            while (true) {
+                receivedCommand = readSocket();
                 if (receivedCommand.equals(END_INCOMMAND)) {
-                    System.out.println("End socket: " + theSocket);
                     writeSocket(END_OUTCOMMAND);
                     break;
                 }
                 else if (receivedCommand.substring(0, 3).equals(GETFILE_INCOMMAND)) {
                     int _hash = Integer.parseInt(receivedCommand.substring(receivedCommand.indexOf(' ') + 1));
-                    System.out.println(String.format("GET received: %d from %s", _hash, theSocket));
                     Tuple theTuple = theTupleList.getByHash(_hash);
                     if (theTuple == null) {
                         writeSocket(NOTFOUND_OUTCOMMAND);
                     } else {
                         writeSocket(String.format("%s %d", theTuple.ip, theTuple.fileSize));
+                        theTupleList.remove(theTuple);  /*|Round     | */
+                        theTupleList.add(theTuple);    /* |Robin     |*/
                     }
                 }
                 else if (receivedCommand.substring(0, 3).equals(STARTSEED_INCOMMAND)) {
@@ -79,11 +77,8 @@ public class socketHandler implements Runnable {
                     String _ip = theSocket.getInetAddress().toString();
                     _ip = _ip.substring(_ip.indexOf('/') + 1);
                     long _fileSize = Long.parseLong(receivedCommand.substring(receivedCommand.lastIndexOf(' ') + 1));
-                    System.out.println(String.format("SEED received: %d from %s size %d", _hash, _ip, _fileSize));
                     Tuple theTuple = new Tuple(_hash, _ip, _fileSize);
-                    System.out.println(String.format("Tuple created: %d %s %d", theTuple.hash, theTuple.ip, theTuple.fileSize));
                     theTupleList.add(theTuple);
-                    System.out.println("Tuple added");
                     writeSocket(SEEDFILE_OUTCOMMAND);
                 }
                 else if (receivedCommand.substring(0, 3).equals(STOPSEED_INCOMMAND)) {
@@ -96,10 +91,10 @@ public class socketHandler implements Runnable {
                 else {
                     System.out.println("Unknown command received.");
                 }
-
-            } catch (IOException ioe) {
-                System.out.println("Error communicating with client: " + ioe.getMessage());
             }
+
+        } catch (IOException ioe) {
+                System.out.println("Error communicating with client: " + ioe.getMessage());
         }
     }
 
@@ -119,15 +114,22 @@ public class socketHandler implements Runnable {
             if (streamIn  != null)  streamIn.close();
             if (streamOut != null) streamOut.close();
             if (theSocket != null) theSocket.close();
+            System.out.println("Socket closed.");
         } catch (IOException ioe) {
             System.out.println("Error closing socket: " + ioe.getMessage());
         }
     }
 
     private void writeSocket(String msg) throws IOException {
-        System.out.println("Sending: " + msg);
         streamOut.writeUTF(msg);
+        System.out.println("Sent: " + msg);
         streamOut.flush();
+    }
+
+    private String readSocket() throws IOException {
+        String receivedCommand = streamIn.readUTF();
+        System.out.println("Received: " + receivedCommand);
+        return receivedCommand;
     }
 
 }
