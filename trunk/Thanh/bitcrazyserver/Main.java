@@ -16,9 +16,10 @@ public class Main {
     public static void main(String[] args) {
         try {
             theServer = new ServerSocket(WELCOME_PORT);
-            System.out.println("Server socket created successful: " + theServer);
+            System.out.println("Server socket created successfully: " + theServer);
+            theTupleList = new TupleList();
         } catch (IOException ioe) {
-            System.out.println(String.format("Error creating server socket at port %1$d: %2$s", WELCOME_PORT, ioe.getMessage()));
+            System.out.println(String.format("Error creating server socket at port %d: %s", WELCOME_PORT, ioe.getMessage()));
         }
 
         while (true) {
