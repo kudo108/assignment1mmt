@@ -1,4 +1,4 @@
-package javaapplication7;
+package test;
 
 import java.io.*;
 import java.net.*;
@@ -63,7 +63,7 @@ public class Client {
             System.out.println(String.format("%d not found.", _hash));
         }
         else {
-            String _ip = receivedCommand.substring(0, receivedCommand.indexOf(' ') - 1);
+            String _ip = receivedCommand.substring(0, receivedCommand.indexOf(' '));
             long _fileSize = Long.parseLong(receivedCommand.substring(receivedCommand.indexOf(' ') + 1));
             result = new Tuple(_hash, _ip, _fileSize);
         }
@@ -74,6 +74,7 @@ public class Client {
         Boolean result = false;
         writeSocket(String.format("%s %d %d", STARTSEED_OUTCOMMAND, _hash, _fileSize));
         String receivedCommand = streamIn.readUTF();
+        System.out.println(receivedCommand);
         if (receivedCommand.equals(SEEDFILE_INCOMMAND)) result = true;
         return result;
     }
@@ -96,6 +97,7 @@ public class Client {
     }
 
     private void writeSocket(String msg) throws IOException {
+        System.out.println("Sending: " + msg);
         streamOut.writeUTF(msg);
         streamOut.flush();
     }

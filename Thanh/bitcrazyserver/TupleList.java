@@ -10,7 +10,7 @@ public class TupleList {
     private ArrayList theList;
 
     public TupleList() {
-        theList = new ArrayList(0);
+        theList = new ArrayList(10);
     }
 
     public void add(Tuple _tuple) {
