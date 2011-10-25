@@ -57,12 +57,13 @@ public class SocketHandler implements Runnable {
         try {
             while (true) {
                 receivedCommand = readSocket();
-                if (receivedCommand.equals(END_INCOMMAND)) {
+                String prefix = getStringElem(receivedCommand, 1);
+                if (prefix.equals(END_INCOMMAND)) {
                     writeSocket(END_OUTCOMMAND);
                     break;
                 }
-                else if (receivedCommand.substring(0, 3).equals(GETFILE_INCOMMAND)) {
-                    int _hash = Integer.parseInt(receivedCommand.substring(receivedCommand.indexOf(' ') + 1));
+                else if (prefix.equals(GETFILE_INCOMMAND)) {
+                    int _hash = Integer.parseInt(getStringElem(receivedCommand, 2));
                     Tuple theTuple = theTupleList.getByHash(_hash);
                     if (theTuple == null) {
                         writeSocket(NOTFOUND_OUTCOMMAND);
@@ -72,19 +73,17 @@ public class SocketHandler implements Runnable {
                         theTupleList.add(theTuple);    /* |Robin     |*/
                     }
                 }
-                else if (receivedCommand.substring(0, 3).equals(STARTSEED_INCOMMAND)) {
-                    int _hash = Integer.parseInt(receivedCommand.substring(receivedCommand.indexOf(' ') + 1, receivedCommand.lastIndexOf(' ')));
-                    String _ip = theSocket.getInetAddress().toString();
-                    _ip = _ip.substring(_ip.indexOf('/') + 1);
-                    long _fileSize = Long.parseLong(receivedCommand.substring(receivedCommand.lastIndexOf(' ') + 1));
+                else if (prefix.equals(STARTSEED_INCOMMAND)) {
+                    int _hash = Integer.parseInt(getStringElem(receivedCommand, 2));
+                    String _ip = getGuestIP();
+                    long _fileSize = Long.parseLong(getStringElem(receivedCommand, 3));
                     Tuple theTuple = new Tuple(_hash, _ip, _fileSize);
                     theTupleList.add(theTuple);
                     writeSocket(SEEDFILE_OUTCOMMAND);
                 }
-                else if (receivedCommand.substring(0, 3).equals(STOPSEED_INCOMMAND)) {
-                    int _hash = Integer.parseInt(receivedCommand.substring(receivedCommand.indexOf(' ') + 1));
-                    String _ip = theSocket.getInetAddress().toString();
-                    _ip = _ip.substring(_ip.indexOf('/') + 1);
+                else if (prefix.equals(STOPSEED_INCOMMAND)) {
+                    int _hash = Integer.parseInt(getStringElem(receivedCommand, 2));
+                    String _ip = getGuestIP();
                     theTupleList.remove(_hash, _ip);
                     writeSocket(SEEDFILE_OUTCOMMAND);
                 }
@@ -130,6 +129,27 @@ public class SocketHandler implements Runnable {
         String receivedCommand = streamIn.readUTF();
         System.out.println("Received: " + receivedCommand);
         return receivedCommand;
+    }
+
+    private String getStringElem(String _string, int _n) {
+        String leftover = _string;
+        String result = null;
+        for (int i = 0; i < _n; i++) {
+            result = leftover;
+            if (result.indexOf(' ') >= 0) {
+                result = result.substring(0, result.indexOf(' '));
+                leftover = leftover.substring(leftover.indexOf(' ') + 1);
+            } else {
+                leftover = "";
+            }
+        }
+        return result;
+    }
+
+    private String getGuestIP() {
+        String result = theSocket.getInetAddress().toString();
+        result = result.substring(result.indexOf('/') + 1);
+        return result;
     }
 
 }

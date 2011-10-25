@@ -1,8 +1,0 @@
-//Chạy bằng command line
-
-java -jar bitcrazyserver.jar
-
-hoặc
-
-java -cp bitcrazyServer.jar bitcrazyserver.Main
-
