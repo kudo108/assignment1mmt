@@ -7,24 +7,6 @@ import java.net.*;
  *
  * @author T'PHaM
  */
-
-
-/** Usage:
- * new Client(): kết nối tới server tại localhost:33333.
- *
- * new Client(String _serverIP): kết nối tới server tại _serverIP: 33333.
- *
- * public Tuple getByHash(int _hash): dùng để lấy địa chỉ ip của người đang giữ
- * file và dung lượng của file đó từ server.
- *
- * public Boolean seedFile(int _hash, long _fileSize): đăng ký seed file
- * với server.
- *
- * public Boolean stopSeed(int _hash): báo cho server việc ngưng seed file.
- *
- * public Boolean finishSocket(): kết thúc kết nối với server.
- */
-
 public class Client {
     private static final int    SERVER_PORT          = 33333;
     private static final String END_OUTCOMMAND       = "END";
@@ -39,12 +21,19 @@ public class Client {
     private DataInputStream  streamIn  = null;
     private DataOutputStream streamOut = null;
 
-    public Client() {
-        Constructor("localhost");
-    }
-
     public Client(String _serverIP) {
-        Constructor(_serverIP);
+        try {
+            theSocket = new Socket(_serverIP, SERVER_PORT);
+            streamIn  = new DataInputStream(new
+                            BufferedInputStream(theSocket.getInputStream()));
+            streamOut = new DataOutputStream(new
+                            BufferedOutputStream(theSocket.getOutputStream()));
+            System.out.println("Connect successfully to server: " + theSocket);
+        } catch (UnknownHostException uhe) {
+            System.out.println("Cannot connect to server: " + uhe.getMessage());
+        } catch  (IOException ioe) {
+            System.out.println("I/O error: " + ioe.getMessage());
+        }
     }
 
     public Tuple getByHash(int _hash) throws IOException {
@@ -122,21 +111,6 @@ public class Client {
             if (theSocket != null) theSocket.close();
         } catch (IOException ioe) {
             System.out.println("Error closing socket to server: " + ioe.getMessage());
-        }
-    }
-
-    private void Constructor(String _serverIP) {
-        try {
-            theSocket = new Socket(_serverIP, SERVER_PORT);
-            streamIn  = new DataInputStream(new
-                            BufferedInputStream(theSocket.getInputStream()));
-            streamOut = new DataOutputStream(new
-                            BufferedOutputStream(theSocket.getOutputStream()));
-            System.out.println("Connect successfully to server: " + theSocket);
-        } catch (UnknownHostException uhe) {
-            System.out.println("Cannot connect to server: " + uhe.getMessage());
-        } catch  (IOException ioe) {
-            System.out.println("I/O error: " + ioe.getMessage());
         }
     }
 
