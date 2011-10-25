@@ -16,23 +16,26 @@ import java.io.*;
 public class FileDownload implements Runnable{
     private int hash = 0;
     public GUI UI;
-    FileDownload(int hash, GUI UI){
+    private String IP;
+    private File file;
+    FileDownload(int hash, GUI UI,String IP, File file){
         super();
         this.hash = hash;
         this.UI = UI;
+        this.IP = IP;
+        this.file = file;
     }
     
     @Override
     public void run(){
         Socket sk = null;
-        String Location = null;
         try{
-            Client theClient = new Client();///MT
+            Client theClient = new Client(IP);///MT
             Tuple theTuple = theClient.getByHash(hash);///MT
             theClient.finishSocket();
             if(theTuple != null){//nếu có người đang seed
                 //Connect server on port 5555
-                sk = new Socket(theTuple.ip,5554);
+                sk = new Socket(theTuple.ip,5555);
                 System.out.println("Request to server");
             
             
@@ -56,25 +59,24 @@ public class FileDownload implements Runnable{
                 }else{
                     /* Reply back to client with READY status */
                     System.out.println("Current row is : "+UI.getCurrentRow()+UI.countRow());
-                    UI.setText("Current row is : " +Integer.toString(UI.getCurrentRow())+UI.countRow());
+                    
                     outReader.write("READY\n");
                     outReader.flush();
                 
-                    Location = "C://Users/NS/Desktop/Test Ass MMT/";
                 
                     /* Add row into file list*/
 //                  fileLst.addFile(filePath, selectedFile.length(), selectedFile.hashCode());
                     UI.addRow();
                     System.out.println("Current row is : "+UI.getCurrentRow()+UI.countRow());
-                    UI.setName(fileName,UI.countRow() - 1);
-//                  UI.setSize(hash);
+                    UI.setName(file.getName(),UI.getCurrentRow());
+                    UI.setSize(file.length(),UI.getCurrentRow());
                     UI.setStatus("Downloading",UI.getCurrentRow());
-                    UI.setHash(hash,UI.getCurrentRow());
-                    UI.setPath(Location + fileName,UI.getCurrentRow());
+                    UI.setHash(file.hashCode(),UI.getCurrentRow());
+                    UI.setPath(file.getParent(),UI.getCurrentRow());
 //                  UI.increaseRow();
                 
                     /* Create a new file in the tmp directory using the filename */
-                    FileOutputStream wr = new FileOutputStream(new File(Location + fileName));
+                    FileOutputStream wr = new FileOutputStream(new File(file.getAbsolutePath()));
         
                     byte[] buffer = new byte[sk.getReceiveBufferSize()];
 
@@ -85,15 +87,20 @@ public class FileDownload implements Runnable{
                         wr.write(buffer,0,bytesReceived);
 
                     }
-                    System.out.println(UI.getCurrentRow());int currentRow;
-                    if(UI.getCurrentRow() > 0) currentRow = UI.getCurrentRow() - 1;
-                    else currentRow = UI.getCurrentRow();
-                    UI.setStatus("Done!",currentRow);
-               
+                    System.out.println(UI.getCurrentRow());
+                    if(UI.wasAdded()){
+                        UI.setStatus("Done!",UI.getCurrentRow() - 1);
+                    }else{
+                        UI.setStatus("Done!",UI.getCurrentRow());
+                    }
+                    wr.close();
+                    inReader.close();
+                    outReader.close();
+                    input.close();
                 }
-                inReader.close();
-                outReader.close();
-                input.close();
+                
+            } else{
+                UI.showMess(UI, "File not found!");
             }
             
         }catch(Exception e){

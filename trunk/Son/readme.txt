@@ -1,12 +1,13 @@
 ﻿Danh sách class và các chức năng
 
+Class Main : Class chính của chương trình. Khởi tạo ServerSocket và khởi tạo GUI
 Class GUI : 
-Class này có chức năng tạo giao diện và cũng là class chính chạy hàm main của chương trình
+Class này có chức năng tạo giao diện cùng một số đối tượng để thao tác với người dùng
 Các đối tượng : 
 Bảng (fileBrowser) chứa danh sách các file đang chạy (down hay seed)
 Có các nút với các hàm sự kiện sau :
 ADD  : hàm addButtonActionPerformed - thêm 1 dòng vào bảng
-START : hàm startButtonActionPerformed - bắt đầu seed 1 file (chưa được seed) có sẵn trong bảng
+START : hàm startButtonActionPerformed - chuyển status 1 file thành 
 STOP : hàm stopButtonActionPerformed - dừng seed 1 file đang seed
 REMOVE : hàm removeButtonActionPerformed - xóa 1 file trong bảng
 ADD HASH : hàm addHashButtonActionPerformed - thêm hash của file cần download

@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.io.*;
 import javax.swing.table.DefaultTableModel;
 import java.net.*;
+import java.lang.String;
 
 
 
@@ -40,6 +41,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
     String fileName = null;
     String filePath = null;
     private String path;
+    private boolean wasAdd = false;
    
 //    Calendar cal = new GregorianCalendar();
     
@@ -60,7 +62,11 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         super();
         setLookandFeel();
         initComponents();
+        setDefaultIP();
         fileLst = new ListFile();
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        removeButton.setEnabled(false);
     }
     public void showMessage(String message){
         JOptionPane.showMessageDialog(this, message);
@@ -76,10 +82,10 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        fileBrowser = new javax.swing.JFileChooser();
+        fileOpen = new javax.swing.JFileChooser();
+        fileSave = new javax.swing.JFileChooser();
         addButton = new javax.swing.JButton();
         startButton = new javax.swing.JButton();
-        pathField = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         FileTable = new javax.swing.JTable(model){
             public boolean isCellEditable(int rowIndex, int colIndex) {
@@ -89,15 +95,24 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         removeButton = new javax.swing.JButton();
         addHashButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
+        IPField = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        changeButton = new javax.swing.JButton();
 
-        fileBrowser.addActionListener(new java.awt.event.ActionListener() {
+        fileOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileBrowserActionPerformed(evt);
+                fileOpenActionPerformed(evt);
+            }
+        });
+
+        fileSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileSaveActionPerformed(evt);
             }
         });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("BitCrazy on port 5554");
+        setTitle("BitCrazy v1.0 - Computer Network - HCMUT");
 
         addButton.setText("ADD");
         addButton.addActionListener(new java.awt.event.ActionListener() {
@@ -113,8 +128,6 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
             }
         });
 
-        pathField.setEditable(false);
-
         model = new DefaultTableModel(
             new Object [][] {
             },
@@ -125,6 +138,11 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         FileTable.setModel(model );
         FileTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         FileTable.setName(""); // NOI18N
+        FileTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                FileTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(FileTable);
         FileTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
@@ -149,6 +167,15 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
             }
         });
 
+        jLabel2.setText("Server IP");
+
+        changeButton.setText("CHANGE IP");
+        changeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -156,41 +183,54 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(stopButton, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(removeButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(addHashButton))
-                    .addComponent(pathField, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE))
-                .addContainerGap())
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(stopButton, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(removeButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(addHashButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(changeButton)
+                                .addGap(33, 33, 33)))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(IPField, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                        .addGap(362, 362, 362))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addContainerGap(554, Short.MAX_VALUE))))
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addButton, addHashButton, removeButton, startButton, stopButton});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addButton, addHashButton, changeButton, removeButton, startButton, stopButton});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addButton)
                     .addComponent(startButton)
                     .addComponent(removeButton)
                     .addComponent(stopButton)
-                    .addComponent(addHashButton))
+                    .addComponent(addHashButton)
+                    .addComponent(changeButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(IPField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addButton, addHashButton, removeButton, startButton, stopButton});
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addButton, addHashButton, changeButton, removeButton, startButton, stopButton});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -200,9 +240,10 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
      * Mở cửa sổ duyệt file (fileBrowser)
  */
 private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+
+    this.wasAdd = true;
     //Create a file chooser
-    
-    fileBrowser.showOpenDialog(this);
+    fileOpen.showOpenDialog(this);
    
 }//GEN-LAST:event_addButtonActionPerformed
 /*
@@ -217,7 +258,7 @@ private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
         fileLst.removeFile(Hash);
         
         model.removeRow(FileTable.getSelectedRow()); 
-        this.row--;
+        reset();
     }
 }//GEN-LAST:event_removeButtonActionPerformed
 
@@ -232,21 +273,27 @@ private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     sltRow = FileTable.getSelectedRow();
     String status = null;
     int Hash = -1;
-    if(sltRow != -1){
-        Hash = getHashCol(sltRow);
-        if(FileTable.getValueAt(sltRow, STATUS_COL) == null){//if not seeding or done
-            setStatus("Seeding",sltRow);
-            System.out.print("StartButton event : ");
-            System.out.println("seeding hash : " + Hash);
-            try{
-                Client client = new Client();
+    if(sltRow != -1 && (getStatusCol(sltRow) == null || getStatusCol(sltRow).isEmpty())){
+        //if not seeding or done 
+        String IPServer = IPField.getText();
+        try{
+            if(!IPServer.equals("")){
+                startButton.setEnabled(false);
+//                stopButton.setEnabled(true);
+                IPField.setEditable(false);
+                setStatus("Seeding",sltRow);
+                System.out.print("StartButton event : ");
+                System.out.println("seeding hash : " + Hash);
+                Client client = new Client(IPServer);
                 boolean success = client.seedFile(getHashCol(sltRow), getSizeCol(sltRow));
                 if(success){
                     client.finishSocket();
                 }
-            }catch(Exception e){
-                showMess(this,"SeedFileError : " + e.getMessage());
+            }else{
+                showMess(this,"Please fill in Server IP field");
             }
+        }catch(Exception e){
+            showMess(this,"SeedFileError : " + e.getMessage());
         }
     }
 
@@ -264,8 +311,8 @@ private void addHashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     if(str != null){
         try{
             hash = Integer.parseInt(str);
-            FileDownload down = new FileDownload(hash,this);
-            (new Thread(down)).start();
+            fileSave.showSaveDialog(this);
+            
         }catch(Exception e){
             showMess(this,"Invalid hash : "+str);
         }
@@ -278,19 +325,14 @@ private void addHashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
  * + Lấy file cần add vô bảng từ cửa sổ duyệt file
  * + Thêm 1 dòng vào bảng với các filed : Name, Size, Hash, Path
  */
-private void fileBrowserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileBrowserActionPerformed
+private void fileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileOpenActionPerformed
     if (JFileChooser.APPROVE_SELECTION.equals(evt.getActionCommand())) {
             // Open or Save was clicked
         //Get information of selectedFile
-        File selectedFile = fileBrowser.getSelectedFile();
-        
-        
-        //Set the path of selectedFile to pathField
-        pathField.setText(filePath);
-    
+        File selectedFile = fileOpen.getSelectedFile();
         boolean already = false;
         
-        for(int i = 0; i < row; i++){
+        for(int i = 0; i < countRow(); i++){
             if(getHashCol(i) == selectedFile.hashCode()){
                 showMess(this,"This file has already added!");
                 already = true;
@@ -300,17 +342,15 @@ private void fileBrowserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
         if(!already){
          
             fileLst.addFile(filePath, selectedFile.length(), selectedFile.hashCode());
-            
             //Add a row into the table
             addRow();
             setName(selectedFile.getName(),getCurrentRow());
             setSize(selectedFile.length(),getCurrentRow());
             setHash(selectedFile.hashCode(),getCurrentRow());
-            setPath(selectedFile.getAbsolutePath(),getCurrentRow());
+            setPath(selectedFile.getParent(),getCurrentRow());
         }
-   
     }
-}//GEN-LAST:event_fileBrowserActionPerformed
+}//GEN-LAST:event_fileOpenActionPerformed
 /*
  * Hàm xử lí nút STOP
  * Chức năng :
@@ -318,13 +358,14 @@ private void fileBrowserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
  */
 private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
     int selectRow = FileTable.getSelectedRow();
-    if(sltRow > -1){
-        if(getStatusCol(sltRow).equals("Seeding")){
-            setStatus("",sltRow);
+    if(selectRow > -1){
+        if(getStatusCol(selectRow) != null && getStatusCol(selectRow).equals("Seeding")){
+            setStatus("",selectRow);
+            String IPServer = IPField.getText();
             //Notice to server that you stopped this hash
             try{
-                Client client = new Client();
-                boolean success = client.stopSeed(getHashCol(sltRow));
+                Client client = new Client(IPServer);
+                boolean success = client.stopSeed(getHashCol(selectRow));
                 if(success) client.finishSocket();
             }catch(Exception e){
                 showMess(this,e.getMessage());
@@ -333,15 +374,59 @@ private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     }
 }//GEN-LAST:event_stopButtonActionPerformed
 
-public void setText(String text){
-    pathField.setText(text);
-}
+private void FileTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FileTableMouseClicked
+    int sltFile = FileTable.getSelectedRow();
+    if(sltFile != -1){
+        removeButton.setEnabled(true);
+        if(getStatusCol(sltFile) == null || getStatusCol(sltFile).equals("")){
+            startButton.setEnabled(true);
+        }else{
+            startButton.setEnabled(false);
+            if(!getStatusCol(sltFile).equals("Done!"))
+                stopButton.setEnabled(true);
+        }
+    }else{
+//        startButton.setEnabled(false);
+//        stopButton.setEnabled(false);
+//        removeButton.setEnabled(false);
+    }
+}//GEN-LAST:event_FileTableMouseClicked
+
+private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeButtonActionPerformed
+    IPField.setEditable(true);
+}//GEN-LAST:event_changeButtonActionPerformed
+
+private void fileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileSaveActionPerformed
+    if(JFileChooser.APPROVE_SELECTION.equals(evt.getActionCommand())){
+        File selectedFile = fileSave.getSelectedFile();
+        int response = JOptionPane.CANCEL_OPTION;
+        if(selectedFile.exists()){//if selectedFile has already existed
+            response = JOptionPane.showConfirmDialog(this, "Overwrite existing file?", 
+            "Confirm overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            
+        }
+        String IPServer = IPField.getText();
+        if(response != JOptionPane.CANCEL_OPTION){
+            if(!IPServer.equals("")){
+                IPField.setEditable(false);
+                FileDownload down = new FileDownload(hash,this,IPServer,selectedFile);
+                (new Thread(down)).start();
+                //reset variable wasAdded
+                reset();
+            }else{
+                showMess(this,"Please fill in the Server IP field");
+            }
+        }
+    }
+}//GEN-LAST:event_fileSaveActionPerformed
+
+
 
 public void showMess(GUI parent,String str){
     JOptionPane.showMessageDialog(parent, str, "ERROR",JOptionPane.ERROR_MESSAGE);
 }
 /*
- * These func use for file list
+ * These func use for file list (maybe not use anymore :D)
  */
 public int getHash(){
     return this.hash;
@@ -353,11 +438,22 @@ public String getFileName(){
 public String getFilePath(){
     return this.filePath;
 }
+//--------------------------
 public int getCurrentRow(){
     return countRow() - 1;
 }
 public int getSelectRow(){
     return this.sltRow;
+}
+public boolean wasAdded(){
+    return this.wasAdd;
+}
+public void reset(){
+    this.wasAdd = false;
+}
+
+public void setDefaultIP(){
+    IPField.setText("localhost");
 }
 //--------------------------------------------------------------
 /*
@@ -374,23 +470,33 @@ public void addRow(){
     model.addRow(new Object[]{null,null,null,null,null});
 }
 public String getNameCol(int row){
-    return FileTable.getValueAt(row, NAME_COL).toString();
+    Object t = FileTable.getValueAt(row, NAME_COL);
+    if(t == null) return null;
+    return t.toString();
 }
 
 public long getSizeCol(int row){
-    return Long.parseLong(FileTable.getValueAt(row, SIZE_COL).toString());
+    Object t = FileTable.getValueAt(row, SIZE_COL);
+    if(t == null) return -1;
+    return Long.parseLong(t.toString());
 }
 
 public String getStatusCol(int row){
-    return FileTable.getValueAt(row, STATUS_COL).toString();
+    Object t = FileTable.getValueAt(row, STATUS_COL);
+    if(t == null) return null;
+    return t.toString();
 }
 
 public int getHashCol(int row){
-    return Integer.parseInt(FileTable.getValueAt(row, HASH_COL).toString());
+    Object t = FileTable.getValueAt(row, HASH_COL);
+    if(t == null) return -1;
+    return Integer.parseInt(t.toString());
 }
 
 public String getPathCol(int row){
-    return FileTable.getValueAt(row, LOCATION_COL).toString();
+    Object t = FileTable.getValueAt(row, LOCATION_COL);
+    if(t == null) return null;
+    return t.toString();
 }
 
 public void setName(String name,int sltRow){
@@ -494,11 +600,14 @@ catch (javax.swing.UnsupportedLookAndFeelException ex) {
     }*/
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable FileTable;
+    private javax.swing.JTextField IPField;
     private javax.swing.JButton addButton;
     private javax.swing.JButton addHashButton;
-    private javax.swing.JFileChooser fileBrowser;
+    private javax.swing.JButton changeButton;
+    private javax.swing.JFileChooser fileOpen;
+    private javax.swing.JFileChooser fileSave;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField pathField;
     private javax.swing.JButton removeButton;
     private javax.swing.JButton startButton;
     private javax.swing.JButton stopButton;

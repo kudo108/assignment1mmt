@@ -44,6 +44,7 @@ public class Client {
     }
 
     public Client(String _serverIP) {
+        super();
         Constructor(_serverIP);
     }
 
