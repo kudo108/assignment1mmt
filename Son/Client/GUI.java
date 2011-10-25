@@ -320,6 +320,7 @@ private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     int selectRow = FileTable.getSelectedRow();
     if(sltRow > -1){
         if(getStatusCol(sltRow).equals("Seeding")){
+            setStatus("",sltRow);
             //Notice to server that you stopped this hash
             try{
                 Client client = new Client();
