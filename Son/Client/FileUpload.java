@@ -75,7 +75,7 @@ public class FileUpload implements Runnable{
             System.out.println(serverStatus);
             if ( serverStatus.equals("READY") ){
                
-                FileInputStream file = new FileInputStream(filePath);
+                FileInputStream file = new FileInputStream(filePath+"\\"+fileName);
                 
 //                fstream = new FileWriter("src/log/log.txt",true);
 //                log = new BufferedWriter(fstream);
