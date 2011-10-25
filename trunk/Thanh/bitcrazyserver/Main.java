@@ -25,7 +25,8 @@ public class Main {
         while (true) {
             try {
                 Socket theSocket = theServer.accept();
-                socketHandler theSocketHandler = new socketHandler(theSocket, theTupleList);
+                System.out.println("Accepted new incoming socket: " + theSocket);
+                SocketHandler theSocketHandler = new SocketHandler(theSocket, theTupleList);
                 theSocketHandler.start();
             } catch (IOException ioe) {
                 System.out.println("Error getting incoming connection: " + ioe.getMessage());

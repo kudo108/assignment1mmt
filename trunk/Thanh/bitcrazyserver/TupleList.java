@@ -10,7 +10,7 @@ public class TupleList {
     private ArrayList theList;
 
     public TupleList() {
-        theList = new ArrayList(10);
+        theList = new ArrayList(0);
     }
 
     public void add(Tuple _tuple) {
@@ -24,6 +24,10 @@ public class TupleList {
                 break;
             }
         }
+    }
+
+    public void remove(Tuple _tuple) {
+        theList.remove(_tuple);
     }
 
     public Tuple getByHash(int _hash) {
