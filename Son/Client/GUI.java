@@ -324,9 +324,7 @@ private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             try{
                 Client client = new Client();
                 boolean success = client.stopSeed(getHashCol(sltRow));
-                if(success){
-                    
-                }
+                if(success) client.finishSocket();
             }catch(Exception e){
                 showMess(this,e.getMessage());
             }
