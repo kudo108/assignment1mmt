@@ -35,11 +35,6 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
     
     private DefaultTableModel model;
     private int sltRow = 0;
-    private int row = 0;
-    private int hash = 0;
-    String fileName = null;
-    String filePath = null;
-    private String path;
     private int isExist = JOptionPane.OK_OPTION;
     private File selectedFile = null;
    
@@ -318,7 +313,7 @@ private void addHashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     String str = JOptionPane.showInputDialog(this,"Enter hash : ");
     if(str != null){
         try{
-            hash = Integer.parseInt(str);
+            int hash = Integer.parseInt(str);
             String IPServer = IPField.getText();
             if(!IPServer.equals("")){
                 IPField.setEditable(false);
@@ -356,7 +351,7 @@ private void fileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         }
         if(!already){
             
-            fileLst.addFile(filePath, sltFile.length(), sltFile.hashCode());
+            fileLst.addFile(sltFile.getAbsolutePath(), sltFile.length(), sltFile.hashCode());
             //Add a row into the table
             addRow();
             setName(sltFile.getName(),getCurrentRow());
@@ -424,16 +419,7 @@ public void showMess(GUI parent,String str){
 /*
  * These func use for file list (maybe not use anymore :D)
  */
-public int getHash(){
-    return this.hash;
-}
 
-public String getFileName(){
-    return this.fileName;
-}
-public String getFilePath(){
-    return this.filePath;
-}
 //--------------------------
 public int getCurrentRow(){
     return countRow() - 1;
@@ -466,9 +452,6 @@ public void setDefaultName(String name){
  */
 public int countRow(){
     return FileTable.getRowCount();
-}
-public void increaseRow(){
-    this.row++;
 }
 
 public void addRow(){
