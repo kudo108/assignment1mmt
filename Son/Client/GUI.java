@@ -15,7 +15,6 @@ import javax.swing.*;
 import java.io.*;
 import javax.swing.table.DefaultTableModel;
 import java.net.*;
-import java.lang.String;
 
 
 
@@ -65,9 +64,6 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         initComponents();
         setDefaultIP();
         fileLst = new ListFile();
-        startButton.setEnabled(false);
-        stopButton.setEnabled(false);
-        removeButton.setEnabled(false);
     }
     public void showMessage(String message){
         JOptionPane.showMessageDialog(this, message);
@@ -146,11 +142,6 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         FileTable.setModel(model );
         FileTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         FileTable.setName(""); // NOI18N
-        FileTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                FileTableMouseClicked(evt);
-            }
-        });
         jScrollPane1.setViewportView(FileTable);
         FileTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
@@ -288,21 +279,23 @@ private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     sltRow = FileTable.getSelectedRow();
     String status = null;
     int Hash = -1;
-    if(sltRow != -1 && (getStatusCol(sltRow) == null || getStatusCol(sltRow).isEmpty())){
+    if(sltRow != -1 && getStatusCol(sltRow).isEmpty()){
         //if not seeding or done 
         String IPServer = IPField.getText();
         try{
             if(!IPServer.equals("")){
-                startButton.setEnabled(false);
 //                stopButton.setEnabled(true);
                 IPField.setEditable(false);
-                setStatus("Seeding",sltRow);
                 System.out.print("StartButton event : ");
                 System.out.println("seeding hash : " + Hash);
                 Client client = new Client(IPServer);
                 boolean success = client.seedFile(getHashCol(sltRow), getSizeCol(sltRow));
                 if(success){
                     client.finishSocket();
+//                    startButton.setEnabled(false);
+                    setStatus("Seeding",sltRow);
+                } else{
+                    setStatus("Error!",sltRow);
                 }
             }else{
                 showMess(this,"Please fill in Server IP field");
@@ -381,7 +374,7 @@ private void fileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
     int selectRow = FileTable.getSelectedRow();
     if(selectRow > -1){
-        if(getStatusCol(selectRow) != null && getStatusCol(selectRow).equals("Seeding")){
+        if(getStatusCol(selectRow).equals("Seeding")){
             setStatus("",selectRow);
             String IPServer = IPField.getText();
             //Notice to server that you stopped this hash
@@ -395,24 +388,6 @@ private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         }
     }
 }//GEN-LAST:event_stopButtonActionPerformed
-
-private void FileTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FileTableMouseClicked
-    int selectRow = FileTable.getSelectedRow();
-    if(selectRow != -1){
-        removeButton.setEnabled(true);
-        if(getStatusCol(selectRow) == null || getStatusCol(selectRow).equals("")){
-            startButton.setEnabled(true);
-        }else{
-            startButton.setEnabled(false);
-            if(!getStatusCol(selectRow).equals("Done!"))
-                stopButton.setEnabled(true);
-        }
-    }else{
-//        startButton.setEnabled(false);
-//        stopButton.setEnabled(false);
-//        removeButton.setEnabled(false);
-    }
-}//GEN-LAST:event_FileTableMouseClicked
 
 private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeButtonActionPerformed
     IPField.setEditable(true);
@@ -430,9 +405,11 @@ private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:even
     //Stop seed every file in the table
     for(int i = 0; i < countRow(); i++){
         try{
-            Client client = new Client(IPServer);
-            client.stopSeed(getHashCol(i));
-            client.finishSocket();
+            if(getStatusCol(i).equals("Seeding")){
+                Client client = new Client(IPServer);
+                client.stopSeed(getHashCol(i));
+                client.finishSocket();
+            }
         }catch(Exception e){
             showMess(this,"Can't stop seed file : "+getNameCol(i));
         }
@@ -511,7 +488,7 @@ public long getSizeCol(int row){
 
 public String getStatusCol(int row){
     Object t = FileTable.getValueAt(row, STATUS_COL);
-    if(t == null) return null;
+    if(t == null) return "";
     return t.toString();
 }
 
