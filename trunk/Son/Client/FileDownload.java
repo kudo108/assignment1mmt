@@ -8,6 +8,7 @@ package Client;
  */
 import java.net.*;
 import java.io.*;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,13 +18,11 @@ public class FileDownload implements Runnable{
     private int hash = 0;
     public GUI UI;
     private String IP;
-    private File file;
-    FileDownload(int hash, GUI UI,String IP, File file){
+    FileDownload(int hash, GUI UI,String IP){
         super();
         this.hash = hash;
         this.UI = UI;
         this.IP = IP;
-        this.file = file;
     }
     
     @Override
@@ -33,9 +32,10 @@ public class FileDownload implements Runnable{
             Client theClient = new Client(IP);///MT
             Tuple theTuple = theClient.getByHash(hash);///MT
             theClient.finishSocket();
-            if(theTuple != null){//nếu có người đang seed
-                //Connect server on port 5555
-                sk = new Socket(theTuple.ip,5555);
+            if(theTuple != null){//if there are at least 1 seeder (actually only 1 :P)
+                
+                //Connect server on port 5554
+                sk = new Socket(theTuple.ip,5554);
                 System.out.println("Request to server");
             
             
@@ -50,60 +50,73 @@ public class FileDownload implements Runnable{
                 /* Read the filename */
                 String fileName = inReader.readLine();
 
-                if ( fileName.equals("404") ){
+                if ( fileName.equals("404") ){// if seeder has removed that file
                 
                     outReader.write("NOT_YET\n");
                     outReader.flush();
                     UI.showMess(UI, "File not found!");
                 
                 }else{
-                    /* Reply back to client with READY status */
-                    System.out.println("Current row is : "+UI.getCurrentRow()+UI.countRow());
+                    //Call the fileSave dialog with default file name
+                    UI.setDefaultName(fileName);
                     
-                    outReader.write("READY\n");
-                    outReader.flush();
+                    //Get the file to save
+                    File file = UI.getSelectFile();
+                    
+                    if(file != null && UI.fileExist() == JOptionPane.OK_OPTION){
+                    //if the file is exist and user want to overwrite it
+                    //or the file isn't exist
+                        
+                        /* Reply back to client with READY status */
+         
+                        outReader.write("READY\n");
+                        outReader.flush();
+         
+                        /* Add row into file list*/
+//                      fileLst.addFile(filePath, selectedFile.length(), selectedFile.hashCode());
+                        UI.addRow();
+                        UI.setName(file.getName(),UI.getCurrentRow());
+                        UI.setSize(file.length(),UI.getCurrentRow());
+                        UI.setStatus("Downloading",UI.getCurrentRow());
+                        UI.setHash(file.hashCode(),UI.getCurrentRow());
+                        UI.setPath(file.getParent(),UI.getCurrentRow());
+
                 
-                
-                    /* Add row into file list*/
-//                  fileLst.addFile(filePath, selectedFile.length(), selectedFile.hashCode());
-                    UI.addRow();
-                    System.out.println("Current row is : "+UI.getCurrentRow()+UI.countRow());
-                    UI.setName(file.getName(),UI.getCurrentRow());
-                    UI.setSize(file.length(),UI.getCurrentRow());
-                    UI.setStatus("Downloading",UI.getCurrentRow());
-                    UI.setHash(file.hashCode(),UI.getCurrentRow());
-                    UI.setPath(file.getParent(),UI.getCurrentRow());
-//                  UI.increaseRow();
-                
-                    /* Create a new file in the tmp directory using the filename */
-                    FileOutputStream wr = new FileOutputStream(new File(file.getAbsolutePath()));
+                        /* Create a new file in the tmp directory using the filename */
+                        FileOutputStream wr = new FileOutputStream(new File(file.getAbsolutePath()));
         
-                    byte[] buffer = new byte[sk.getReceiveBufferSize()];
+                        byte[] buffer = new byte[sk.getReceiveBufferSize()];
 
-                    int bytesReceived = 0;
- 
-                    while((bytesReceived = input.read(buffer))>0){
-                        /* Write to the file */
-                        wr.write(buffer,0,bytesReceived);
-
+                        int bytesReceived = 0;
+                        
+                        System.out.println("Starting download with buffer size : "+sk.getReceiveBufferSize());
+                        while((bytesReceived = input.read(buffer))>0){
+                            /* Write to the file */
+                            wr.write(buffer,0,bytesReceived);
+                        }
+                        System.out.print("File : "+file.getName());
+                        for(int i = 0; i < UI.countRow(); i++){
+                            if(UI.getHashCol(i) == file.hashCode()){
+                                UI.setStatus("Done!", i);
+                                break;
+                            }
+                        }
+                        wr.close();
+                        inReader.close();
+                        outReader.close();
+                        input.close();
+                    } else{ //if user click Cancel
+                        //Send message telling seeder that user isn't ready to download
+                        outReader.write("NOT_YET\n");
                     }
-                    System.out.println(UI.getCurrentRow());
-                    if(UI.wasAdded()){
-                        UI.setStatus("Done!",UI.getCurrentRow() - 1);
-                    }else{
-                        UI.setStatus("Done!",UI.getCurrentRow());
-                    }
-                    wr.close();
-                    inReader.close();
-                    outReader.close();
-                    input.close();
-                }
+                }//end if (filename.equals("404")
                 
-            } else{
-                UI.showMess(UI, "File not found!");
-            }
+            } else{ // if there is no seeders
+                UI.showMess(UI, "File not found!!!");
+            }// end if (theTuple != null) 
             
         }catch(Exception e){
+            //Catch any exception
             System.out.println(e);
             UI.showMess(UI, e.getMessage());
         }
