@@ -41,7 +41,8 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
     String fileName = null;
     String filePath = null;
     private String path;
-    private boolean wasAdd = false;
+    private int isExist = JOptionPane.OK_OPTION;
+    private File selectedFile = null;
    
 //    Calendar cal = new GregorianCalendar();
     
@@ -113,8 +114,14 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("BitCrazy v1.0 - Computer Network - HCMUT");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         addButton.setText("ADD");
+        addButton.setToolTipText("Click to add new file");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addButtonActionPerformed(evt);
@@ -122,6 +129,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         });
 
         startButton.setText("START");
+        startButton.setToolTipText("Start seeding");
         startButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startButtonActionPerformed(evt);
@@ -147,6 +155,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         FileTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         removeButton.setText("REMOVE");
+        removeButton.setToolTipText("Remove the current row");
         removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeButtonActionPerformed(evt);
@@ -154,6 +163,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         });
 
         addHashButton.setText("ADDHASH");
+        addHashButton.setToolTipText("Add new hash to download");
         addHashButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addHashButtonActionPerformed(evt);
@@ -161,6 +171,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         });
 
         stopButton.setText("STOP");
+        stopButton.setToolTipText("Stop seeding");
         stopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stopButtonActionPerformed(evt);
@@ -170,6 +181,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         jLabel2.setText("Server IP");
 
         changeButton.setText("CHANGE IP");
+        changeButton.setToolTipText("Enable/Disable Server IP field");
         changeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 changeButtonActionPerformed(evt);
@@ -240,11 +252,9 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
      * Mở cửa sổ duyệt file (fileBrowser)
  */
 private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-
-    this.wasAdd = true;
     //Create a file chooser
     fileOpen.showOpenDialog(this);
-   
+    //And let it do the rest :D
 }//GEN-LAST:event_addButtonActionPerformed
 /*
  * Hàm xử lí sự kiện nút REMOVE
@@ -256,9 +266,16 @@ private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     if(removedRow >= 0){
         int Hash = Integer.parseInt(FileTable.getValueAt(removedRow, HASH_COL).toString());
         fileLst.removeFile(Hash);
-        
+        String IPServer = IPField.getText();
+            //Notice to server that you stopped this hash
+            try{
+                Client client = new Client(IPServer);
+                boolean success = client.stopSeed(getHashCol(removedRow));
+                if(success) client.finishSocket();
+            }catch(Exception e){
+                showMess(this,e.getMessage());
+            }
         model.removeRow(FileTable.getSelectedRow()); 
-        reset();
     }
 }//GEN-LAST:event_removeButtonActionPerformed
 
@@ -311,7 +328,14 @@ private void addHashButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     if(str != null){
         try{
             hash = Integer.parseInt(str);
-            fileSave.showSaveDialog(this);
+            String IPServer = IPField.getText();
+            if(!IPServer.equals("")){
+                IPField.setEditable(false);
+                FileDownload down = new FileDownload(hash,this,IPServer);
+                (new Thread(down)).start();
+            }else{
+                showMess(this,"Please fill in the Server IP field");
+            }
             
         }catch(Exception e){
             showMess(this,"Invalid hash : "+str);
@@ -329,25 +353,25 @@ private void fileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     if (JFileChooser.APPROVE_SELECTION.equals(evt.getActionCommand())) {
             // Open or Save was clicked
         //Get information of selectedFile
-        File selectedFile = fileOpen.getSelectedFile();
+        File sltFile = fileOpen.getSelectedFile();
         boolean already = false;
         
         for(int i = 0; i < countRow(); i++){
-            if(getHashCol(i) == selectedFile.hashCode()){
+            if(getHashCol(i) == sltFile.hashCode()){
                 showMess(this,"This file has already added!");
                 already = true;
                 break;
             }
         }
         if(!already){
-         
-            fileLst.addFile(filePath, selectedFile.length(), selectedFile.hashCode());
+            
+            fileLst.addFile(filePath, sltFile.length(), sltFile.hashCode());
             //Add a row into the table
             addRow();
-            setName(selectedFile.getName(),getCurrentRow());
-            setSize(selectedFile.length(),getCurrentRow());
-            setHash(selectedFile.hashCode(),getCurrentRow());
-            setPath(selectedFile.getParent(),getCurrentRow());
+            setName(sltFile.getName(),getCurrentRow());
+            setSize(sltFile.length(),getCurrentRow());
+            setHash(sltFile.hashCode(),getCurrentRow());
+            setPath(sltFile.getParent(),getCurrentRow());
         }
     }
 }//GEN-LAST:event_fileOpenActionPerformed
@@ -375,14 +399,14 @@ private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
 }//GEN-LAST:event_stopButtonActionPerformed
 
 private void FileTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FileTableMouseClicked
-    int sltFile = FileTable.getSelectedRow();
-    if(sltFile != -1){
+    int selectRow = FileTable.getSelectedRow();
+    if(selectRow != -1){
         removeButton.setEnabled(true);
-        if(getStatusCol(sltFile) == null || getStatusCol(sltFile).equals("")){
+        if(getStatusCol(selectRow) == null || getStatusCol(selectRow).equals("")){
             startButton.setEnabled(true);
         }else{
             startButton.setEnabled(false);
-            if(!getStatusCol(sltFile).equals("Done!"))
+            if(!getStatusCol(selectRow).equals("Done!"))
                 stopButton.setEnabled(true);
         }
     }else{
@@ -397,28 +421,25 @@ private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 }//GEN-LAST:event_changeButtonActionPerformed
 
 private void fileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileSaveActionPerformed
+   
     if(JFileChooser.APPROVE_SELECTION.equals(evt.getActionCommand())){
-        File selectedFile = fileSave.getSelectedFile();
-        int response = JOptionPane.CANCEL_OPTION;
-        if(selectedFile.exists()){//if selectedFile has already existed
-            response = JOptionPane.showConfirmDialog(this, "Overwrite existing file?", 
-            "Confirm overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-            
-        }
-        String IPServer = IPField.getText();
-        if(response != JOptionPane.CANCEL_OPTION){
-            if(!IPServer.equals("")){
-                IPField.setEditable(false);
-                FileDownload down = new FileDownload(hash,this,IPServer,selectedFile);
-                (new Thread(down)).start();
-                //reset variable wasAdded
-                reset();
-            }else{
-                showMess(this,"Please fill in the Server IP field");
-            }
-        }
+        selectedFile = fileSave.getSelectedFile();
     }
 }//GEN-LAST:event_fileSaveActionPerformed
+
+private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    String IPServer = IPField.getText();
+    //Stop seed every file in the table
+    for(int i = 0; i < countRow(); i++){
+        try{
+            Client client = new Client(IPServer);
+            client.stopSeed(getHashCol(i));
+            client.finishSocket();
+        }catch(Exception e){
+            showMess(this,"Can't stop seed file : "+getNameCol(i));
+        }
+    }
+}//GEN-LAST:event_formWindowClosing
 
 
 
@@ -442,18 +463,27 @@ public String getFilePath(){
 public int getCurrentRow(){
     return countRow() - 1;
 }
-public int getSelectRow(){
+public int getSelectedRow(){
     return this.sltRow;
 }
-public boolean wasAdded(){
-    return this.wasAdd;
+public File getSelectFile(){
+    return this.selectedFile;
 }
-public void reset(){
-    this.wasAdd = false;
+public int fileExist(){
+    System.out.println("Call");
+    if(selectedFile.exists()){//if selectedFile has already existed
+        isExist = JOptionPane.showConfirmDialog(this, "Overwrite existing file?", 
+           "Confirm overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE); 
+     }
+    return isExist;
 }
 
 public void setDefaultIP(){
     IPField.setText("localhost");
+}
+public void setDefaultName(String name){
+    fileSave.setSelectedFile(new File(name));
+    fileSave.showSaveDialog(this);
 }
 //--------------------------------------------------------------
 /*
@@ -516,6 +546,8 @@ public void setPath(String loc, int sltRow){
 }
 
 //------------------------------------------------------------
+
+
 
 private void setLookandFeel(){
     try {

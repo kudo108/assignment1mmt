@@ -97,7 +97,7 @@ public class FileUpload implements Runnable{
                 //stop timer
                 long endTime = System.currentTimeMillis();
                 
-                UI.setStatus("Done!",UI.getSelectRow());
+                UI.setStatus("Done!",UI.getSelectedRow());
 
                 output.close();
                 file.close();

@@ -20,6 +20,9 @@
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -97,6 +100,7 @@
     <Component class="javax.swing.JButton" name="addButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="ADD"/>
+        <Property name="toolTipText" type="java.lang.String" value="Click to add new file"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addButtonActionPerformed"/>
@@ -105,6 +109,7 @@
     <Component class="javax.swing.JButton" name="startButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="START"/>
+        <Property name="toolTipText" type="java.lang.String" value="Start seeding"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startButtonActionPerformed"/>
@@ -146,6 +151,7 @@
     <Component class="javax.swing.JButton" name="removeButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="REMOVE"/>
+        <Property name="toolTipText" type="java.lang.String" value="Remove the current row"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="removeButtonActionPerformed"/>
@@ -154,6 +160,7 @@
     <Component class="javax.swing.JButton" name="addHashButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="ADDHASH"/>
+        <Property name="toolTipText" type="java.lang.String" value="Add new hash to download"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addHashButtonActionPerformed"/>
@@ -162,6 +169,7 @@
     <Component class="javax.swing.JButton" name="stopButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="STOP"/>
+        <Property name="toolTipText" type="java.lang.String" value="Stop seeding"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stopButtonActionPerformed"/>
@@ -177,6 +185,7 @@
     <Component class="javax.swing.JButton" name="changeButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="CHANGE IP"/>
+        <Property name="toolTipText" type="java.lang.String" value="Enable/Disable Server IP field"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="changeButtonActionPerformed"/>
