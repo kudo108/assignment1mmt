@@ -1,4 +1,4 @@
-package Client;
+
 
 
 
@@ -35,7 +35,7 @@ public class FileDownload implements Runnable{
             if(theTuple != null){//if there are at least 1 seeder (actually only 1 :P)
                 
                 //Connect server on port 5554
-                sk = new Socket(theTuple.ip,5554);
+                sk = new Socket(theTuple.ip,22222);
                 System.out.println("Request to server");
             
             
