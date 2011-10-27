@@ -19,7 +19,7 @@ public class Client {
     private static final String HELLO_INCOMMAND      = "HEL";
     private static final String END_INCOMMAND        = "END";
     private static final String NOTFOUND_INCOMMAND   = "FNF";
-    //private static final String CANTSEED_INCOMMAND   = "NMO";
+//  private static final String CANTSEED_INCOMMAND   = "NMO";
     private static final String ID_INCOMMAND         = "TID";
     private static final String OK_INCOMMAND         = "OKL";
     private static final String INFO_INCOMMAND       = "INF";
@@ -146,13 +146,13 @@ public class Client {
 
     private void writeSocket(String msg) throws IOException {
         streamOut.writeUTF(msg);
-        System.out.println("Sent to server: " + msg);
+        System.out.println("Server << " + msg);
         streamOut.flush();
     }
 
     private String readSocket() throws IOException {
         String receivedCommand = streamIn.readUTF();
-        System.out.println("Received from server: " + receivedCommand);
+        System.out.println("Server >> " + receivedCommand);
         return receivedCommand;
     }
 
