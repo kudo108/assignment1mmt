@@ -1,4 +1,4 @@
-
+package Client;
 
 /*
  * To change this template, choose Tools | Templates
@@ -40,6 +40,7 @@ public class FileUpload implements Runnable{
             
             //Get hash which client want to download
             int reqHash = Integer.parseInt(inReader.readLine());
+            
             System.out.println("Client want to download hash : "+reqHash);
             
             /* Check file hash whether it active */
@@ -49,7 +50,6 @@ public class FileUpload implements Runnable{
                     fileName = UI.getNameCol(i);
                     filePath = UI.getPathCol(i);
                     fileSize = UI.getSizeCol(i);
-                    System.out.println("Row "+i +" "+fileName+" "+filePath);
                     break;
                 }
             }
@@ -61,57 +61,54 @@ public class FileUpload implements Runnable{
 //            sk.setSendBufferSize(4096);
             if(fileName.equals("")){
                 outputStream.write("404\n");
+                System.out.println("File not found!");
             }
             else{
                 outputStream.write(fileName + "\n"+fileSize +"\n");
-            }
+                System.out.println("File found : " + fileName + " " + fileSize);
+            
             
             
             outputStream.flush();
             
             /* Get reponse from server */
 
-           
-
-//          String leecherStatus = inReader.readLine(); // Read the first line
-            offSet = Integer.parseInt(inReader.readLine());
+            String leecherStatus = inReader.readLine();
+            
             
             System.out.println("Client want to download from offSet = "+offSet);
             
             /* If server is ready, send the file */
            
-            if (offSet != -1){//start upload
+            if (!leecherStatus.equals("NOT_YET")){//start upload
                 FileInputStream file = new FileInputStream(filePath+"\\"+fileName);
                 
-
 //                sk.setSendBufferSize(65536);
                 byte[] buffer = new byte[sk.getSendBufferSize()];
                 
-                
+                offSet = Integer.parseInt(leecherStatus);
                 int bytesRead = 0;
-               
-                
+                int sum = 0;
+
                 //start timer
                 long startTime = System.currentTimeMillis();
                 
                 while((bytesRead = file.read(buffer, offSet, sk.getSendBufferSize()))>0)
                 {
+                    sum += bytesRead;
+                    System.out.println("Sent " + sum);
                     output.write(buffer,0,bytesRead);
                    
                 }
-//                log.close();
-                
+
                 //stop timer
                 long endTime = System.currentTimeMillis();
                 
-//                UI.setStatus("Done!",UI.getSelectedRow());
-
-                output.close();
                 file.close();
-                sk.close();
-                
             }
-            
+            }
+            output.close();
+            sk.close();
         }
         
         catch (Exception ex){
