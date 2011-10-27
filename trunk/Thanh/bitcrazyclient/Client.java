@@ -9,13 +9,20 @@ import java.net.*;
  */
 public class Client {
     private static final int    SERVER_PORT          = 33333;
+    private static final String HELLO_OUTCOMMAND     = "HEL";
     private static final String END_OUTCOMMAND       = "END";
-    private static final String END_INCOMMAND        = "END";
     private static final String GETFILE_OUTCOMMAND   = "GET";
-    private static final String NOTFOUND_INCOMMAND   = "FNF";
-    private static final String STARTSEED_OUTCOMMAND = "SSR";
+    private static final String RESEED_OUTCOMMAND    = "SSR";
+    private static final String STARTSEED_OUTCOMMAND = "SSN";
     private static final String STOPSEED_OUTCOMMAND  = "SST";
-    private static final String SEEDFILE_INCOMMAND   = "OKL";
+    private static final String STOPALL_OUTCOMMAND   = "SAL";
+    private static final String HELLO_INCOMMAND      = "HEL";
+    private static final String END_INCOMMAND        = "END";
+    private static final String NOTFOUND_INCOMMAND   = "FNF";
+    //private static final String CANTSEED_INCOMMAND   = "NMO";
+    private static final String ID_INCOMMAND         = "TID";
+    private static final String OK_INCOMMAND         = "OKL";
+    private static final String INFO_INCOMMAND       = "INF";
 
     private Socket           theSocket = null;
     private DataInputStream  streamIn  = null;
@@ -36,55 +43,100 @@ public class Client {
         }
     }
 
-    public Tuple getByHash(int _hash) throws IOException {
-        Tuple result = null;
-        writeSocket(String.format("%s %d", GETFILE_OUTCOMMAND, _hash));
+    public boolean testServer() throws IOException {
+        boolean result = false;
+        writeSocket(HELLO_OUTCOMMAND);
         String receivedCommand = readSocket();
-        if ((receivedCommand == null) || (receivedCommand.equals(NOTFOUND_INCOMMAND))) {
-            System.out.println(String.format("%d not found on server.", _hash));
-        }
-        else {
-            String _ip = receivedCommand.substring(0, receivedCommand.indexOf(' '));
-            long _fileSize = Long.parseLong(receivedCommand.substring(receivedCommand.indexOf(' ') + 1));
-            result = new Tuple(_hash, _ip, _fileSize);
-            System.out.println(String.format("%d with size of %d located on %s.", _hash, _fileSize, _ip));
+        if (receivedCommand.equals(HELLO_INCOMMAND)) {
+            result = true;
+            System.out.println("Connection to server successfully.");
+        } else {
+            System.out.println("Failed connecting to server.");
         }
         return result;
     }
 
-    public Boolean seedFile(int _hash, long _fileSize) throws IOException {
-        Boolean result = false;
-        writeSocket(String.format("%s %d %d", STARTSEED_OUTCOMMAND, _hash, _fileSize));
+    public Tuple getByID(int _id) throws IOException {
+        Tuple result = null;
+        writeSocket(String.format("%s %d", GETFILE_OUTCOMMAND, _id));
         String receivedCommand = readSocket();
-        if (receivedCommand.equals(SEEDFILE_INCOMMAND)) {
+        String prefix = getStringElem(receivedCommand, 1);
+        if ((receivedCommand == null) || (prefix.equals(NOTFOUND_INCOMMAND))) {
+            System.out.println(String.format("File id: %d not found on server.", _id));
+        } else if (prefix.equals(INFO_INCOMMAND)) {
+            String ip     =                getStringElem(receivedCommand, 2) ;
+            long fileSize = Long.parseLong(getStringElem(receivedCommand, 3));
+            result = new Tuple(_id, ip, fileSize);
+            System.out.println(String.format("File id: %d with size of %d located on %s.", _id, fileSize, ip));
+        }
+        else {
+            System.out.println(String.format("File id: %d. Unknown command received.", _id));
+        }
+        return result;
+    }
+
+    public int startSeed(long _fileSize) throws IOException {
+        int result = -1;
+        writeSocket(String.format("%s %d %d", STARTSEED_OUTCOMMAND, _fileSize));
+        String receivedCommand = readSocket();
+        String prefix = getStringElem(receivedCommand, 1);
+        if (prefix.equals(ID_INCOMMAND)) {
+            result = Integer.parseInt(getStringElem(receivedCommand, 2));
             System.out.println("Seeding accepted.");
-            result = true;
         } else {
             System.out.println("Seeding rejected.");
         }
         return result;
     }
 
-    public Boolean stopSeed(int _hash) throws IOException {
-        Boolean result = false;
-        writeSocket(String.format("%s %d", STOPSEED_OUTCOMMAND, _hash));
+    public boolean reSeed(int _id) throws IOException {
+        boolean result = false;
+        writeSocket(String.format("%s %d", RESEED_OUTCOMMAND, _id));
         String receivedCommand = readSocket();
-        if (receivedCommand.equals(SEEDFILE_INCOMMAND)) {
-            System.out.println("Stop seeding accepted.");
+        String prefix = getStringElem(receivedCommand, 1);
+        if (prefix.equals(OK_INCOMMAND)) {
             result = true;
+            System.out.println("Seeding accepted.");
+        } else {
+            System.out.println("Seeding rejected.");
+        }
+        return result;
+    }
+
+    public boolean stopSeed(int _id) throws IOException {
+        boolean result = false;
+        writeSocket(String.format("%s %d", STOPSEED_OUTCOMMAND, _id));
+        String receivedCommand = readSocket();
+        String prefix = getStringElem(receivedCommand, 1);
+        if (prefix.equals(OK_INCOMMAND)) {
+            result = true;
+            System.out.println("Stop seeding accepted.");
         } else {
             System.out.println("Stop seeding rejected.");
         }
         return result;
     }
 
-    public Boolean finishSocket() throws IOException {
-        Boolean result = false;
+    public boolean stopSeed() throws IOException {
+        boolean result = false;
+        writeSocket(STOPALL_OUTCOMMAND);
+        String receivedCommand = readSocket();
+        if (receivedCommand.equals(OK_INCOMMAND)) {
+            result = true;
+            System.out.println("Stop all seeding successfully.");
+        } else {
+            System.out.println("Stop all seeding failed.");
+        }
+        return result;
+    }
+
+    public boolean finish() throws IOException {
+        boolean result = false;
         writeSocket(END_OUTCOMMAND);
         String receivedCommand = readSocket();
         if (receivedCommand.equals(END_INCOMMAND)) {
-            System.out.println("Connection to server closed.");
             result = true;
+            System.out.println("Connection to server closed.");
         } else {
             System.out.println("Failed closing connection to server.");
         }
@@ -102,6 +154,21 @@ public class Client {
         String receivedCommand = streamIn.readUTF();
         System.out.println("Received from server: " + receivedCommand);
         return receivedCommand;
+    }
+
+    private String getStringElem(String _string, int _n) {
+        String leftover = _string;
+        String result = null;
+        for (int i = 0; i < _n; i++) {
+            result = leftover;
+            if (result.indexOf(' ') >= 0) {
+                result = result.substring(0, result.indexOf(' '));
+                leftover = leftover.substring(leftover.indexOf(' ') + 1);
+            } else {
+                leftover = "";
+            }
+        }
+        return result;
     }
 
     private void close() {
