@@ -44,18 +44,8 @@ public class Main {
                 System.out.println("Accepted new incoming socket: " + theSocket);
                 SocketHandler theSocketHandler = new SocketHandler(theSocket, theTupleList);
                 theSocketHandler.start();
-                {
-                    try {
-                    FileOutputStream file  = new   FileOutputStream(SAVE);
-                    ObjectOutputStream out = new ObjectOutputStream(file);
-                    out.writeObject(theTupleList);
-                    out.flush();
-                    out.close();
-                    file.close();
-                    } catch (IOException ioe) {
-                        System.out.println("Error saving: " + ioe.getMessage());
-                    }
-                }
+                FileSaver theFileSaver = new FileSaver(SAVE, theTupleList);
+                theFileSaver.start();
             }
         } catch (IOException ioe) {
                 System.out.println("Error getting incoming connection: " + ioe.getMessage());

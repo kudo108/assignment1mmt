@@ -135,13 +135,13 @@ public class SocketHandler implements Runnable {
 
     private void writeSocket(String msg) throws IOException {
         streamOut.writeUTF(msg);
-        System.out.println(String.format("%s:%d<< %s", getGuestIP(), getGuestPort(), msg));
+        System.out.println(String.format("%s:%d << %s", getGuestIP(), getGuestPort(), msg));
         streamOut.flush();
     }
 
     private String readSocket() throws IOException {
         String receivedCommand = streamIn.readUTF();
-        System.out.println(String.format("%s:%d>> %s", getGuestIP(), getGuestPort(), receivedCommand));
+        System.out.println(String.format("%s:%d >> %s", getGuestIP(), getGuestPort(), receivedCommand));
         return receivedCommand;
     }
 
