@@ -38,7 +38,7 @@ public class FileUpload implements Runnable{
             
             //Get hash which client want to download
             int reqHash = Integer.parseInt(inReader.readLine());
-            
+            System.out.println("Client want to download hash : "+reqHash);
             
             /* Check file hash whether it active */
   
@@ -69,18 +69,20 @@ public class FileUpload implements Runnable{
 
            
 
-            String serverStatus = inReader.readLine(); // Read the first line
+            String leecherStatus = inReader.readLine(); // Read the first line
            
             /* If server is ready, send the file */
-            System.out.println(serverStatus);
-            if ( serverStatus.equals("READY") ){
+            System.out.println(leecherStatus);
+            if ( leecherStatus.equals("READY") ){
                
                 FileInputStream file = new FileInputStream(filePath+"\\"+fileName);
                 
 //                fstream = new FileWriter("src/log/log.txt",true);
 //                log = new BufferedWriter(fstream);
                 
+//                sk.setSendBufferSize(65536);
                 byte[] buffer = new byte[sk.getSendBufferSize()];
+                
                 
                 int bytesRead = 0;
                 
@@ -97,7 +99,7 @@ public class FileUpload implements Runnable{
                 //stop timer
                 long endTime = System.currentTimeMillis();
                 
-                UI.setStatus("Done!",UI.getSelectedRow());
+//                UI.setStatus("Done!",UI.getSelectedRow());
 
                 output.close();
                 file.close();

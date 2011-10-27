@@ -96,7 +96,7 @@ public class FileDownload implements Runnable{
                         }
                         System.out.print("File : "+file.getName());
                         for(int i = 0; i < UI.countRow(); i++){
-                            if(UI.getHashCol(i) == file.hashCode()){
+                            if(UI.getHashCol(i) == file.hashCode() && UI.getStatusCol(i).equals("Downloading")){
                                 UI.setStatus("Done!", i);
                                 break;
                             }

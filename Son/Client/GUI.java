@@ -24,8 +24,9 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
     public static final int NAME_COL = 0;
     public static final int SIZE_COL = 1;
     public static final int STATUS_COL = 2;
-    public static final int HASH_COL = 3;
-    public static final int LOCATION_COL = 4;
+    public static final int PROGRESS_COL = 3;
+    public static final int HASH_COL = 4;
+    public static final int LOCATION_COL = 5;
     //create file list
     public ListFile fileLst;
     
@@ -131,7 +132,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
             new Object [][] {
             },
             new String [] {
-                "Name", "Size", "Status", "Hash" , "Location"
+                "Name", "Size", "Status", "Progress", "Hash" , "Location"
             }
         );
         FileTable.setModel(model );
@@ -252,6 +253,7 @@ private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
         fileLst.removeFile(Hash);
         String IPServer = IPField.getText();
             //Notice to server that you stopped this hash
+        if(getStatusCol(removedRow).equals("Seeding")){
             try{
                 Client client = new Client(IPServer);
                 boolean success = client.stopSeed(getHashCol(removedRow));
@@ -259,6 +261,7 @@ private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
             }catch(Exception e){
                 showMess(this,e.getMessage());
             }
+        }
         model.removeRow(FileTable.getSelectedRow()); 
     }
 }//GEN-LAST:event_removeButtonActionPerformed
