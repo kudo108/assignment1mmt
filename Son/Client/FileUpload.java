@@ -1,4 +1,4 @@
-package Client;
+
 
 /*
  * To change this template, choose Tools | Templates
@@ -15,6 +15,7 @@ import java.io.*;
 public class FileUpload implements Runnable{
     private String fileName = "";
     private String filePath = "";
+    private long fileSize = 0;
     private Socket sk;
     public GUI UI;
 //    OutputStream output;
@@ -46,6 +47,7 @@ public class FileUpload implements Runnable{
                 if( UI.getHashCol(i) == reqHash && UI.getStatusCol(i).equals("Seeding")){
                     fileName = UI.getNameCol(i);
                     filePath = UI.getPathCol(i);
+                    fileSize = UI.getSizeCol(i);
                     System.out.println("Row "+i +" "+fileName+" "+filePath);
                     break;
                 }
@@ -60,9 +62,12 @@ public class FileUpload implements Runnable{
                 outputStream.write("404\n");
             }
             else{
-                outputStream.write(fileName + "\n");
+                outputStream.write(fileName + "\n"+fileSize +"\n");
             }
-                
+            int bytesRead = Integer.parseInt(inReader.readLine());
+            //String bR= inReader.readLine();
+            System.out.println("Client want to download from byteRead = "+bytesRead+"\n");
+            
             outputStream.flush();
             
             /* Get reponse from server */
@@ -74,7 +79,7 @@ public class FileUpload implements Runnable{
             /* If server is ready, send the file */
             System.out.println(leecherStatus);
             if ( leecherStatus.equals("READY") ){
-               
+                
                 FileInputStream file = new FileInputStream(filePath+"\\"+fileName);
                 
 //                fstream = new FileWriter("src/log/log.txt",true);
@@ -84,7 +89,8 @@ public class FileUpload implements Runnable{
                 byte[] buffer = new byte[sk.getSendBufferSize()];
                 
                 
-                int bytesRead = 0;
+                //int bytesRead = 0;
+                
                 
                 //start timer
                 long startTime = System.currentTimeMillis();
