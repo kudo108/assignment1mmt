@@ -77,7 +77,7 @@ public class Client {
 
     public int startSeed(long _fileSize) throws IOException {
         int result = -1;
-        writeSocket(String.format("%s %d %d", STARTSEED_OUTCOMMAND, _fileSize));
+        writeSocket(String.format("%s %d", STARTSEED_OUTCOMMAND, _fileSize));
         String receivedCommand = readSocket();
         String prefix = getStringElem(receivedCommand, 1);
         if (prefix.equals(ID_INCOMMAND)) {
