@@ -13,7 +13,7 @@ package Client;
 
 import javax.swing.*;
 import java.io.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 import java.net.*;
 
 
@@ -24,9 +24,10 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
     public static final int NAME_COL = 0;
     public static final int SIZE_COL = 1;
     public static final int STATUS_COL = 2;
-    public static final int PROGRESS_COL = 3;
-    public static final int HASH_COL = 4;
-    public static final int LOCATION_COL = 5;
+    public static final int SPEED_COL = 3;
+    public static final int PROGRESS_COL = 4;
+    public static final int HASH_COL = 5;
+    public static final int LOCATION_COL = 6;
     //create file list
     public ListFile fileLst;
     
@@ -60,6 +61,9 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         initComponents();
         setDefaultIP();
         fileLst = new ListFile();
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        removeButton.setEnabled(false);
     }
     public void showMessage(String message){
         JOptionPane.showMessageDialog(this, message);
@@ -132,12 +136,22 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
             new Object [][] {
             },
             new String [] {
-                "Name", "Size", "Status", "Progress", "Hash" , "Location"
+                "Name", "Size", "Status", "Speed","Progress", "Hash" , "Location"
             }
         );
         FileTable.setModel(model );
         FileTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         FileTable.setName(""); // NOI18N
+        FileTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                FileTableMouseClicked(evt);
+            }
+        });
+        FileTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                FileTableKeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(FileTable);
         FileTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
@@ -182,7 +196,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -210,7 +224,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addButton)
                     .addComponent(startButton)
@@ -223,7 +237,7 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
                     .addComponent(jLabel2)
                     .addComponent(changeButton))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -277,20 +291,20 @@ private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     sltRow = FileTable.getSelectedRow();
     String status = null;
     int Hash = -1;
-    if(sltRow != -1 && getStatusCol(sltRow).isEmpty()){
+    if(sltRow != -1 && (getStatusCol(sltRow).isEmpty() || getStatusCol(sltRow).equals("Done!"))){
         //if not seeding or done 
         String IPServer = IPField.getText();
         try{
             if(!IPServer.equals("")){
-//                stopButton.setEnabled(true);
-                IPField.setEditable(false);
                 System.out.print("StartButton event : ");
                 System.out.println("seeding hash : " + Hash);
                 Client client = new Client(IPServer);
                 boolean success = client.seedFile(getHashCol(sltRow), getSizeCol(sltRow));
                 if(success){
                     client.finishSocket();
-//                    startButton.setEnabled(false);
+                    startButton.setEnabled(false);
+                    stopButton.setEnabled(true);
+                    IPField.setEditable(false);
                     setStatus("Seeding",sltRow);
                 } else{
                     setStatus("Error!",sltRow);
@@ -379,7 +393,11 @@ private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             try{
                 Client client = new Client(IPServer);
                 boolean success = client.stopSeed(getHashCol(selectRow));
-                if(success) client.finishSocket();
+                if(success){
+                    stopButton.setEnabled(false);
+                    startButton.setEnabled(true);
+                    client.finishSocket();
+                }
             }catch(Exception e){
                 showMess(this,e.getMessage());
             }
@@ -414,8 +432,34 @@ private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:even
     }
 }//GEN-LAST:event_formWindowClosing
 
+private void FileTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FileTableMouseClicked
+    TableAction();
+}//GEN-LAST:event_FileTableMouseClicked
+
+private void FileTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_FileTableKeyReleased
+    TableAction();
+}//GEN-LAST:event_FileTableKeyReleased
 
 
+private void TableAction(){
+    System.out.println("Evnent FileTableMouseClicked");
+    int selectRow = FileTable.getSelectedRow();
+    if(selectRow != -1){//if there is at least 1 row is selected
+        removeButton.setEnabled(true);
+        if(getStatusCol(selectRow).equals("") || getStatusCol(selectRow).equals("Done!")){
+            //if file is inactived or done
+            startButton.setEnabled(true);
+            stopButton.setEnabled(false);
+        } else /*if(getStatusCol(selectRow).equals("Seeding") || getStatusCol(selectRow).equals("Downloading"))*/{
+            stopButton.setEnabled(true);
+            startButton.setEnabled(false);
+        }
+    }else{
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        removeButton.setEnabled(false);
+    }
+}
 public void showMess(GUI parent,String str){
     JOptionPane.showMessageDialog(parent, str, "ERROR",JOptionPane.ERROR_MESSAGE);
 }
@@ -505,7 +549,17 @@ public void setHash(int hash, int sltRow){
 public void setPath(String loc, int sltRow){
     FileTable.setValueAt(loc, sltRow, LOCATION_COL);
 }
-
+public void setProgress(int percent, int sltRow){
+    FileTable.setValueAt(Integer.toString(percent) + "%", sltRow, PROGRESS_COL);
+}
+public void setSpeed(int speed, int sltRow){
+    String calcSpeed = null;
+    if(speed >= 1024*1024*1024) calcSpeed = Integer.toString(speed/(1024*1024*1024)) + "GB/s";
+    else if(speed >= 1024*1024) calcSpeed = Integer.toString(speed/(1024*1024)) + "MB/s";
+    else if(speed >= 1024) calcSpeed = Integer.toString(speed/1024) + "KB/s";
+    else calcSpeed = Integer.toString(speed) + "B/s";
+    FileTable.setValueAt(calcSpeed, sltRow, SPEED_COL);
+}
 //------------------------------------------------------------
 
 
@@ -529,68 +583,9 @@ private void setLookandFeel(){
     }
 }
 
-    /**
-     * @param args the command line arguments
-     
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+                    
+                    
                 
-
-                }
-            }
-        } 
- 
- 
- catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            GUI UI;
-            @Override
-            public void run() {
-                try {
-                    
-                    
-                    UI = new GUI();
-                    UI.setVisible(true);
-                    
-                    
-                    
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(UI, ex.getMessage());
-                }
-            }
-        });
-    }*/
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable FileTable;
     private javax.swing.JTextField IPField;

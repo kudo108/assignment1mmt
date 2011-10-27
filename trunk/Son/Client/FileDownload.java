@@ -1,4 +1,4 @@
-
+package Client;
 
 
 
@@ -9,6 +9,7 @@
 import java.net.*;
 import java.io.*;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -18,6 +19,7 @@ public class FileDownload implements Runnable{
     private int hash = 0;
     public GUI UI;
     private String IP;
+    private long currentSize = 0;
     FileDownload(int hash, GUI UI,String IP){
         super();
         this.hash = hash;
@@ -35,7 +37,7 @@ public class FileDownload implements Runnable{
             if(theTuple != null){//if there are at least 1 seeder (actually only 1 :P)
                 
                 //Connect server on port 5554
-                sk = new Socket(theTuple.ip,22222);
+                sk = new Socket(theTuple.ip,5554);
                 System.out.println("Request to server");
             
             
@@ -49,6 +51,9 @@ public class FileDownload implements Runnable{
   
                 /* Read the filename */
                 String fileName = inReader.readLine();
+                long fileSize = Long.parseLong(inReader.readLine());
+                
+                System.out.println("File : " + fileName + " Size : " + fileSize);
 
                 if ( fileName.equals("404") ){// if seeder has removed that file
                 
@@ -57,6 +62,7 @@ public class FileDownload implements Runnable{
                     UI.showMess(UI, "File not found!");
                 
                 }else{
+                    
                     //Call the fileSave dialog with default file name
                     UI.setDefaultName(fileName);
                     
@@ -67,16 +73,17 @@ public class FileDownload implements Runnable{
                     //if the file is exist and user want to overwrite it
                     //or the file isn't exist
                         
-                        /* Reply back to client with READY status */
-         
-                        outReader.write("READY\n");
+                        int offSet = 0;
+                        
+                        outReader.write(Integer.toString(offSet) + "\n");
                         outReader.flush();
-         
+                        System.out.println("Leecher send offset : " + offSet);
+                        
                         /* Add row into file list*/
-//                      fileLst.addFile(filePath, selectedFile.length(), selectedFile.hashCode());
+
                         UI.addRow();
                         UI.setName(file.getName(),UI.getCurrentRow());
-                        UI.setSize(file.length(),UI.getCurrentRow());
+                        UI.setSize(fileSize,UI.getCurrentRow());
                         UI.setStatus("Downloading",UI.getCurrentRow());
                         UI.setHash(file.hashCode(),UI.getCurrentRow());
                         UI.setPath(file.getParent(),UI.getCurrentRow());
@@ -84,17 +91,47 @@ public class FileDownload implements Runnable{
                 
                         /* Create a new file in the tmp directory using the filename */
                         FileOutputStream wr = new FileOutputStream(new File(file.getAbsolutePath()));
-        
+                        
+//                        sk.setReceiveBufferSize(65536);
                         byte[] buffer = new byte[sk.getReceiveBufferSize()];
 
                         int bytesReceived = 0;
                         
                         System.out.println("Starting download with buffer size : "+sk.getReceiveBufferSize());
+                        int averageByte = input.read(buffer);
+                        System.out.println(averageByte);
+                        
+                        
+                        
+                        long previous = 0;
+                        long current = 0;
+                        int count = 0;
+                        long startTime = System.currentTimeMillis();
                         while((bytesReceived = input.read(buffer))>0){
+                            
+                            current += bytesReceived;
+                            
                             /* Write to the file */
                             wr.write(buffer,0,bytesReceived);
+                            
+                            
+                            
+                            int percent = (int)(current*100/fileSize);
+                            UI.setProgress(percent + 1, UI.getCurrentRow());
+                            long endTime = System.currentTimeMillis();
+                            if((endTime - startTime) >= 1000){// update speed every second
+                                int speed = (int)((current - previous)*1024/( endTime - startTime));
+                                UI.setSpeed(speed, UI.getCurrentRow());
+                                startTime = System.currentTimeMillis();
+                                previous = current;
+                            }
+                            
+                            
                         }
-                        System.out.print("File : "+file.getName());
+                        
+                        
+                       
+//                        UI.showMess(UI, Long.toString((endTime - startTime)));
                         for(int i = 0; i < UI.countRow(); i++){
                             if(UI.getHashCol(i) == file.hashCode() && UI.getStatusCol(i).equals("Downloading")){
                                 UI.setStatus("Done!", i);
@@ -120,5 +157,8 @@ public class FileDownload implements Runnable{
             System.out.println(e);
             UI.showMess(UI, e.getMessage());
         }
+    } // end run()
+    synchronized public long getCurSize(){
+        return this.currentSize;
     }
 }

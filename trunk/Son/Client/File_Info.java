@@ -1,4 +1,4 @@
-
+package Client;
 
 /*
  * To change this template, choose Tools | Templates
@@ -33,8 +33,8 @@ public class File_Info {
         //set FileSize
         private void setFileSize(long size){
             this.FileSize = size;
-            //this.BlockNumber = this.getBlockNumber();
-            //this.setupBlock();
+            this.BlockNumber = this.getBlockNumber();
+            this.setupBlock();
         }
         //get FileSize
         public long getFileSize(){
@@ -42,12 +42,11 @@ public class File_Info {
         }
         //get Number of Block
         // 1 block = 64kB = 65536B
-        /* ko xai Block
         private int getBlockNumber(){
             if(this.FileSize % BLOCK == 0)
                 return (int) (this.FileSize/BLOCK) ;
             else return (int) (this.FileSize/BLOCK) + 1;
-        }*/
+        }
     private ArrayList <String> IPList ;//= new ArrayList <String>();
         /* IPList contain IP which client can download from this IP 
          */
@@ -67,20 +66,18 @@ public class File_Info {
         public int getIPNum(){
             return IPList.size();
         }
-    //private Integer BlockNumber;
-        /*
+    private Integer BlockNumber;
         public int getBlockNum(){
             return this.BlockNumber;
         }
     private int[] BlockStatus ;
-    */
+    
     /*
      * Block status can has 3 value
      * 0 - if block had never downloaded
      * 1 - if block is downloading
      * 2 - if block downloaded.
      */
-        /*
         public void setDownloading(int BlockID){
             BlockStatus[BlockID] = 1;
         }
@@ -93,13 +90,11 @@ public class File_Info {
         public int[] getBlockStatus(){
             return this.BlockStatus;
         }
-         */
-         
         //constructor
     File_Info(String name, long size, int hash) {
         IPList = new ArrayList <String>();
-        //BlockStatus = new int[BLOCK];
-        //for(int i = 0; i < BLOCK; i++) BlockStatus[i] = -1;
+        BlockStatus = new int[BLOCK];
+        for(int i = 0; i < BLOCK; i++) BlockStatus[i] = -1;
         this.setFileName(name);
         this.setFileSize(size);
         //this.setFileSize(Integer.parseInt(size));
