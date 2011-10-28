@@ -1,4 +1,4 @@
-package Client;
+
 
 
 
@@ -9,20 +9,19 @@ package Client;
 import java.net.*;
 import java.io.*;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 /**
  *
  * @author NS
  */
 public class FileDownload implements Runnable{
-    private int hash = 0;
+    private int ID = 0;
     public GUI UI;
     private String IP;
     private long currentSize = 0;
-    FileDownload(int hash, GUI UI,String IP){
+    FileDownload(int ID, GUI UI,String IP){
         super();
-        this.hash = hash;
+        this.ID = ID;
         this.UI = UI;
         this.IP = IP;
     }
@@ -32,12 +31,12 @@ public class FileDownload implements Runnable{
         Socket sk = null;
         try{
             Client theClient = new Client(IP);///MT
-            Tuple theTuple = theClient.getByHash(hash);///MT
-            theClient.finishSocket();
+            Tuple theTuple = theClient.getByID(ID);///MT
+            theClient.finish();
             if(theTuple != null){//if there are at least 1 seeder (actually only 1 :P)
                 
                 //Connect server on port 5554
-                sk = new Socket(theTuple.ip,5554);
+                sk = new Socket(theTuple.getIP(),5554);
                 System.out.println("Request to server");
             
             
@@ -46,20 +45,19 @@ public class FileDownload implements Runnable{
                 BufferedWriter outReader = new BufferedWriter(new OutputStreamWriter(sk.getOutputStream()));
             
                 //request hash
-                outReader.write(hash+"\n");
+                outReader.write(ID+"\n");
                 outReader.flush();
   
                 /* Read the filename */
                 String fileName = inReader.readLine();
-                long fileSize = Long.parseLong(inReader.readLine());
                 
-                System.out.println("File : " + fileName + " Size : " + fileSize);
+                System.out.println("File : " + fileName + " Size : " + theTuple.getFileSize());
 
                 if ( fileName.equals("404") ){// if seeder has removed that file
                 
                     outReader.write("NOT_YET\n");
                     outReader.flush();
-                    UI.showMess(UI, "File not found!");
+                    UI.showInfMess(UI, "File not found!");
                 
                 }else{
                     
@@ -74,6 +72,7 @@ public class FileDownload implements Runnable{
                     //or the file isn't exist
                         
                         int offSet = 0;
+                        long fileSize = theTuple.getFileSize();
                         
                         outReader.write(Integer.toString(offSet) + "\n");
                         outReader.flush();
@@ -85,7 +84,7 @@ public class FileDownload implements Runnable{
                         UI.setName(file.getName(),UI.getCurrentRow());
                         UI.setSize(fileSize,UI.getCurrentRow());
                         UI.setStatus("Downloading",UI.getCurrentRow());
-                        UI.setHash(file.hashCode(),UI.getCurrentRow());
+                        UI.setID(theTuple.getID(),UI.getCurrentRow());
                         UI.setPath(file.getParent(),UI.getCurrentRow());
 
                 
@@ -98,14 +97,9 @@ public class FileDownload implements Runnable{
                         int bytesReceived = 0;
                         
                         System.out.println("Starting download with buffer size : "+sk.getReceiveBufferSize());
-                        int averageByte = input.read(buffer);
-                        System.out.println(averageByte);
-                        
-                        
                         
                         long previous = 0;
                         long current = 0;
-                        int count = 0;
                         long startTime = System.currentTimeMillis();
                         while((bytesReceived = input.read(buffer))>0){
                             
@@ -117,7 +111,8 @@ public class FileDownload implements Runnable{
                             
                             
                             int percent = (int)(current*100/fileSize);
-                            UI.setProgress(percent + 1, UI.getCurrentRow());
+                            if(percent + 1> 100) percent = 100;
+                            UI.setProgress(percent, UI.getCurrentRow());
                             long endTime = System.currentTimeMillis();
                             if((endTime - startTime) >= 1000){// update speed every second
                                 int speed = (int)((current - previous)*1024/( endTime - startTime));
@@ -126,14 +121,13 @@ public class FileDownload implements Runnable{
                                 previous = current;
                             }
                             
-                            
                         }
                         
                         
                        
 //                        UI.showMess(UI, Long.toString((endTime - startTime)));
                         for(int i = 0; i < UI.countRow(); i++){
-                            if(UI.getHashCol(i) == file.hashCode() && UI.getStatusCol(i).equals("Downloading")){
+                            if(UI.getIDCol(i) == file.hashCode() && UI.getStatusCol(i).equals("Downloading")){
                                 UI.setStatus("Done!", i);
                                 break;
                             }
@@ -149,16 +143,13 @@ public class FileDownload implements Runnable{
                 }//end if (filename.equals("404")
                 
             } else{ // if there is no seeders
-                UI.showMess(UI, "File not found!!!");
+                UI.showInfMess(UI, "File not found!!!");
             }// end if (theTuple != null) 
             
         }catch(Exception e){
             //Catch any exception
             System.out.println(e);
-            UI.showMess(UI, e.getMessage());
+            UI.showInfMess(UI, e.getMessage());
         }
     } // end run()
-    synchronized public long getCurSize(){
-        return this.currentSize;
-    }
 }

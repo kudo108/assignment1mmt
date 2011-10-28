@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Client;
 
 /**
  *
@@ -15,7 +14,7 @@ public class Main {
      */
     public static void main(String[] args) {
         Server server = new Server(5555);
-        GUI UI = new GUI();
+        GUI UI = new GUI(server);
         UI.setVisible(true);
         server.listen(UI);
         

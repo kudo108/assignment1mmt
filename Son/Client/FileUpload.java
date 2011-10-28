@@ -1,4 +1,4 @@
-package Client;
+
 
 /*
  * To change this template, choose Tools | Templates
@@ -18,12 +18,20 @@ public class FileUpload implements Runnable{
     private long fileSize = 0;
     private Socket sk;
     public GUI UI;
+    private int reqHash;
     private int offSet = -1;
+    private boolean running= true;
 //    OutputStream output;
 //    FileInputStream file;
 //    boolean success = false;
     
-    
+    public int gethash(){
+        return this.reqHash;
+    }
+    public void stop(){
+        running = false;
+        Thread.interrupted();
+    }
     FileUpload(Socket sk,GUI UI){
         super();
         this.sk = sk;
@@ -39,73 +47,61 @@ public class FileUpload implements Runnable{
             BufferedReader inReader = new BufferedReader(new InputStreamReader(sk.getInputStream()));
             
             //Get hash which client want to download
-            int reqHash = Integer.parseInt(inReader.readLine());
+            reqHash = Integer.parseInt(inReader.readLine());
             
             System.out.println("Client want to download hash : "+reqHash);
             
             /* Check file hash whether it active */
   
             for(int i = 0; i < UI.countRow(); i++){//find file in table
-                if( UI.getHashCol(i) == reqHash && UI.getStatusCol(i).equals("Seeding")){
+                if( UI.getIDCol(i) == reqHash && UI.getStatusCol(i).equals("Seeding")){
                     fileName = UI.getNameCol(i);
                     filePath = UI.getPathCol(i);
-                    fileSize = UI.getSizeCol(i);
                     break;
                 }
             }
             
-            /* Send filename to server */
+            /* Send filename to leecher */
 
             OutputStreamWriter outputStream = new OutputStreamWriter(sk.getOutputStream());
             
 //            sk.setSendBufferSize(4096);
-            if(fileName.equals("")){
+            if(fileName.equals("")){//cannot file the specified file
                 outputStream.write("404\n");
                 System.out.println("File not found!");
             }
-            else{
-                outputStream.write(fileName + "\n"+fileSize +"\n");
-                System.out.println("File found : " + fileName + " " + fileSize);
-            
-            
-            
-            outputStream.flush();
-            
-            /* Get reponse from server */
+            else{//send fileName to leecher
+                outputStream.write(fileName + "\n");
+                System.out.println("File found : " + fileName);
+                
+                outputStream.flush();
 
-            String leecherStatus = inReader.readLine();
-            
-            
-            System.out.println("Client want to download from offSet = "+offSet);
-            
-            /* If server is ready, send the file */
-           
-            if (!leecherStatus.equals("NOT_YET")){//start upload
-                FileInputStream file = new FileInputStream(filePath+"\\"+fileName);
-                
-//                sk.setSendBufferSize(65536);
-                byte[] buffer = new byte[sk.getSendBufferSize()];
-                
-                offSet = Integer.parseInt(leecherStatus);
-                int bytesRead = 0;
-                int sum = 0;
+                /* Get reponse from leecher */
 
-                //start timer
-                long startTime = System.currentTimeMillis();
-                
-                while((bytesRead = file.read(buffer, offSet, sk.getSendBufferSize()))>0)
-                {
-                    sum += bytesRead;
-                    System.out.println("Sent " + sum);
-                    output.write(buffer,0,bytesRead);
-                   
+                String leecherStatus = inReader.readLine();
+
+
+                System.out.println("Client want to download from offSet = "+offSet);
+
+                /* If leecher is ready, send the file */
+
+                if (!leecherStatus.equals("NOT_YET")){//if leecher send offSet of file
+                    FileInputStream file = new FileInputStream(filePath+"\\"+fileName);
+
+    //                sk.setSendBufferSize(65536);
+                    byte[] buffer = new byte[sk.getSendBufferSize()];
+
+                    offSet = Integer.parseInt(leecherStatus);
+
+                    int bytesRead = 0;
+
+                    while(running && (bytesRead = file.read(buffer))>0)
+                    {
+                        output.write(buffer,offSet,bytesRead);
+                    }
+
+                    file.close();
                 }
-
-                //stop timer
-                long endTime = System.currentTimeMillis();
-                
-                file.close();
-            }
             }
             output.close();
             sk.close();
@@ -113,13 +109,9 @@ public class FileUpload implements Runnable{
         
         catch (Exception ex){
             /* Catch any errors */
-//            (new GUI(sk)).showMess(ex.getMessage());
             System.out.println(ex);
             
         }//end try
-        
-        
-        
     }
 //    @Override
 //    public void finalize() throws Throwable{

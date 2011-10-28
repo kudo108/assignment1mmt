@@ -64,7 +64,7 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="addHashButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="changeButton" linkSize="1" min="-2" max="-2" attributes="0"/>
+                          <Component id="connectButton" linkSize="1" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -87,7 +87,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="IPField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="changeButton" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="connectButton" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane1" pref="260" max="32767" attributes="0"/>
@@ -144,7 +144,7 @@
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(model){&#xa;    public boolean isCellEditable(int rowIndex, int colIndex) {&#xa;        return false; //Disallow the editing of any cell&#xa;    }&#xa;}"/>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="model = new DefaultTableModel(&#xa;    new Object [][] {&#xa;    },&#xa;    new String [] {&#xa;        &quot;Name&quot;, &quot;Size&quot;, &quot;Status&quot;, &quot;Speed&quot;,&quot;Progress&quot;, &quot;Hash&quot; , &quot;Location&quot;&#xa;    }&#xa;);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="model = new DefaultTableModel(&#xa;    new Object [][] {&#xa;    },&#xa;    new String [] {&#xa;        &quot;ID&quot;, &quot;Name&quot;, &quot;Size&quot;, &quot;Status&quot;, &quot;Speed&quot;,&quot;Progress&quot;, &quot;Location&quot;&#xa;    }&#xa;);"/>
           </AuxValues>
         </Component>
       </SubComponents>
@@ -160,8 +160,8 @@
     </Component>
     <Component class="javax.swing.JButton" name="addHashButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="ADDHASH"/>
-        <Property name="toolTipText" type="java.lang.String" value="Add new hash to download"/>
+        <Property name="text" type="java.lang.String" value="ADD ID"/>
+        <Property name="toolTipText" type="java.lang.String" value="Add new ID to download"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addHashButtonActionPerformed"/>
@@ -183,13 +183,13 @@
         <Property name="text" type="java.lang.String" value="Server IP"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="changeButton">
+    <Component class="javax.swing.JButton" name="connectButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="CHANGE IP"/>
-        <Property name="toolTipText" type="java.lang.String" value="Enable/Disable Server IP field"/>
+        <Property name="text" type="java.lang.String" value="CONNECT"/>
+        <Property name="toolTipText" type="java.lang.String" value="Connect to server"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="changeButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="connectButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
