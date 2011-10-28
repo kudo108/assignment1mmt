@@ -60,7 +60,7 @@ public class SocketHandler implements Runnable {
     }
 
     private void doMain() throws IOException {
-        String receivedCommand;
+        String receivedCommand = null;
         try {
             while (true) {
                 receivedCommand = readSocket();

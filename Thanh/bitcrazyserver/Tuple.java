@@ -7,7 +7,7 @@ import java.io.*;
  * @author T'PHaM
  */
 public class Tuple implements Serializable {
-    private static final int MAX_IP_ALLOWED = 32;
+    private static final int MAX_IP_ALLOWED = 1024;
 
     private int      key      =   -1;
     private String[] ipList   = null;

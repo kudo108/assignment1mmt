@@ -1,11 +1,11 @@
-
+package bitcrazyclient;
 
 /**
  *
  * @author T'PHaM
  */
 public class Tuple {
-    private int    id     =   -1;
+    private int    id       =   -1;
     private String ip       = null;
     private long   fileSize =   -1;
 
