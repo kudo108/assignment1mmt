@@ -1,4 +1,4 @@
-
+package bitcrazyclient;
 
 import java.io.*;
 import java.net.*;
@@ -163,7 +163,7 @@ public class Client {
 
     private String getStringElem(String _string, int _n) {
         String leftover = _string;
-        String result = null;
+        String result   =    null;
         for (int i = 0; i < _n; i++) {
             result = leftover;
             if (result.indexOf(' ') >= 0) {
