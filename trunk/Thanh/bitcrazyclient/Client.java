@@ -65,9 +65,14 @@ public class Client {
             System.out.println(String.format("File id: %d not found on server.", _id));
         } else if (prefix.equals(INFO_INCOMMAND)) {
             String ip     =                getStringElem(receivedCommand, 2) ;
-            long fileSize = Long.parseLong(getStringElem(receivedCommand, 3));
-            result = new Tuple(_id, ip, fileSize);
-            System.out.println(String.format("File id: %d with size of %d located on %s.", _id, fileSize, ip));
+            if (!ip.equals("null")) {
+                long fileSize = Long.parseLong(getStringElem(receivedCommand, 3));
+                result = new Tuple(_id, ip, fileSize);
+                System.out.println(String.format("File id: %d with size of %d located on %s.", _id, fileSize, ip));
+            }
+            else {
+                System.out.println(String.format("No seeder found for file id: %d", _id));
+            }
         }
         else {
             System.out.println(String.format("File id: %d. Unknown command received.", _id));
