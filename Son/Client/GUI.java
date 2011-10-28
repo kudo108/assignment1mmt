@@ -13,11 +13,12 @@
 import javax.swing.*;
 import java.io.*;
 import javax.swing.table.*;
-
+import java.util.Vector;
 
 
 public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
 
+	private static final String SAVE = "persist.bin";
     public static final int ID_COL = 0;
     public static final int NAME_COL = 1;
     public static final int SIZE_COL = 2;
@@ -128,13 +129,42 @@ public final class GUI extends javax.swing.JFrame /*implements Runnable*/{
             }
         });
 
-        model = new DefaultTableModel(
-            new Object [][] {
-            },
-            new String [] {
-                "ID", "Name", "Size", "Status", "Speed","Progress", "Location"
-            }
-        );
+		try {
+			FileInputStream file = new FileInputStream(SAVE);
+			ObjectInputStream input = new ObjectInputStream(file);
+			Vector dataVectors = (Vector) input.readObject();
+			Vector columnVector = new Vector();
+			columnVector.add("Name");
+			columnVector.add("Size");
+			columnVector.add("Status");
+			columnVector.add("Speed");
+			columnVector.add("Progress");
+			columnVector.add("Hash");
+			columnVector.add("Location");
+			model = new DefaultTableModel(dataVectors, columnVector);
+			input.close();
+			file.close();
+			System.out.println("Saved GUI loaded!");
+		} catch (IOException ioe) {
+			model = new DefaultTableModel(
+			new Object [][] {
+			},
+			new String [] {
+				"Name", "Size", "Status", "Speed","Progress", "Hash" , "Location"
+			}
+		);
+			System.out.println("WELCOME!");
+		} catch (ClassNotFoundException cnfe) {
+			model = new DefaultTableModel(
+			new Object [][] {
+			},
+			new String [] {
+				"Name", "Size", "Status", "Speed","Progress", "Hash" , "Location"
+			}
+		);
+			System.out.println("Loading failed: " + cnfe.getMessage());
+		}
+
         FileTable.setModel(model );
         FileTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         FileTable.setName(""); // NOI18N
@@ -457,6 +487,19 @@ private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:even
 //        showMess(this,"Stop seeding all file : "+e.getMessage());
         System.exit(0);
     }
+	
+	try {
+		FileOutputStream file  = new   FileOutputStream(SAVE);
+		ObjectOutputStream out = new ObjectOutputStream(file);
+		out.writeObject(object);
+		out.flush();
+		out.close();
+		file.close();
+		System.out.println("GUI saved!");
+	} catch (IOException ioe) {
+		System.out.println("Error GUI saving: " + ioe.getMessage());
+	}
+	
 }//GEN-LAST:event_formWindowClosing
 
 private void FileTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FileTableMouseClicked
