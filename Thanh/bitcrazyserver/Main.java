@@ -8,7 +8,7 @@ import java.net.*;
  * @author T'PHaM
  */
 public class Main {
-    private static final String SAVE         = "persist.bin";
+    private static final String SAVE         = "lazycat";
     private static final int    WELCOME_PORT =         33333;
 
     private static ServerSocket theServer    =          null;
