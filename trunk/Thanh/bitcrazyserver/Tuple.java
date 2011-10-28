@@ -79,7 +79,8 @@ public class Tuple implements Serializable {
         String result = null;
         if (ipCount > 0) {
             result = ipList[0];
-            addIP(ipList[0]);
+            ipList[ipCount] = ipList[0];
+            ipCount++;
             removeIP(ipList[0]);
         }
         return result;
