@@ -23,8 +23,8 @@ public class Server{
     public static ServerSocket server;
     private Socket sk;
     private int port;
-    public ArrayList<FileUpload> threadlist;
-    public void stopThread(int hash){
+    public ArrayList<FileUpload> threadlist = new ArrayList<FileUpload>();
+    public boolean stopThread(int hash){
         int index = -1;
         for(int i = 0; i < threadlist.size(); i++){
          if(threadlist.get(i).gethash() == hash){
@@ -32,7 +32,10 @@ public class Server{
              break;
          }   
         }
-        if(index != -1) threadlist.get(index).stop();
+        //System.out.println("line 35/Server.java");
+        if(index != -1) threadlist.get(index).stop();//Tim ra tuc la thread da chay ( dang upload)=>stop
+        else return false;
+        return true;
     }
     Server(int port){
         this.port = port;
