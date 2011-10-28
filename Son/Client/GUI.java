@@ -1,3 +1,5 @@
+package test;
+
 
 /*
  * GUI.java
@@ -491,7 +493,7 @@ private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:even
 	try {
 		FileOutputStream file  = new   FileOutputStream(SAVE);
 		ObjectOutputStream out = new ObjectOutputStream(file);
-		out.writeObject(object);
+		out.writeObject(model.getDataVector());
 		out.flush();
 		out.close();
 		file.close();
