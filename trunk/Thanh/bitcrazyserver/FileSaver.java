@@ -7,8 +7,8 @@ import java.io.*;
  * @author T'PHaM
  */
 public class FileSaver implements Runnable {
-    private String path   = null;
-    private Object object = null;
+    private String      path = null;
+    private Object    object = null;
     private Thread theThread = null;
 
     public FileSaver(String _path, Object _object) {

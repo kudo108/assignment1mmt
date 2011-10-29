@@ -1,7 +1,5 @@
 package bitcrazyserver;
 
-
-
 import java.io.*;
 import java.util.ArrayList;
 
@@ -16,15 +14,13 @@ public class TupleList implements Serializable {
         theList = new ArrayList(0);
     }
 
-    public boolean add(int _id, String _ip) {
-        boolean result = false;
+    public void add(int _id, String _ip) {
         for (int i = 0; i < theList.size(); i++) {
             if (((Tuple) theList.get(i)).getID() == _id) {
-                result = ((Tuple) theList.get(i)).addIP(_ip);
+                ((Tuple) theList.get(i)).addIP(_ip);
                 break;
             }
         }
-        return result;
     }
 
     public int add(String _ip, long _fileSize) {
@@ -35,15 +31,13 @@ public class TupleList implements Serializable {
         return id;
     }
 
-    public boolean remove(int _id, String _ip) {
-        boolean result = false;
+    public void remove(int _id, String _ip) {
         for (int i = 0; i < theList.size(); i++) {
             if (((Tuple) theList.get(i)).getID() == _id) {
-                result = ((Tuple) theList.get(i)).removeIP(_ip);
+                ((Tuple) theList.get(i)).removeIP(_ip);
                 break;
             }
         }
-        return result;
     }
 
     public void remove(String _ip) {

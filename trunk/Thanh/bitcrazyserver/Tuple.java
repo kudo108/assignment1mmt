@@ -1,27 +1,21 @@
 package bitcrazyserver;
 
 import java.io.*;
+import java.util.ArrayList;
 
 /**
  *
  * @author T'PHaM
  */
 public class Tuple implements Serializable {
-    private static final int MAX_IP_ALLOWED = 1024;
-
-    private int      key      =   -1;
-    private String[] ipList   = null;
-    private long     fileSize =   -1;
-    private int      ipCount  =   -1;
+    private int            key =   -1;
+    private ArrayList   ipList = null;
+    private long      fileSize =   -1;
 
     public Tuple(int _key, long _fileSize) {
         key      = _key;
-        ipList   = new String[MAX_IP_ALLOWED];
+        ipList   = new ArrayList(0);
         fileSize = _fileSize;
-        ipCount  = 0;
-        for (int i = 0; i < MAX_IP_ALLOWED; i++) {
-            ipList[i] = "";
-        }
     }
     
     public long getFileSize() {
@@ -33,56 +27,27 @@ public class Tuple implements Serializable {
     }
     
     public int getIPCount() {
-        return ipCount;
+        return ipList.size();
     }
 
-    public boolean addIP(String _ip) {
-        boolean result = false;
-        for (int i = 0; i < ipCount; i++) {
-           if (ipList[i].equals(_ip)) {
-               result = true;
-               break;
-           }
+    public void addIP(String _ip) {
+        if (!ipList.contains(_ip)) {
+            ipList.add(_ip);
         }
-        if ((!result) && (ipCount < MAX_IP_ALLOWED)) {
-            ipList[ipCount] = _ip;
-            ipCount++;
-            result = true;
-        }
-        return result;
     }
 
-    public boolean removeIP(String _ip) {
-        boolean result = false;
-        for (int i = 0; i < ipCount; i++) {
-            if (ipList[i].equals(_ip)) {
-                for (int j = i + 1; j < ipCount; j++) {
-                    ipList[j - 1] = ipList[j];
-                }
-                ipList[ipCount] = "";
-                ipCount--;
-                result = true;
-                break;
-            }
-        }
-        return result;
+    public void removeIP(String _ip) {
+        ipList.remove(_ip);
     }
 
     public void removeAllIP() {
-        for (int i = 0; i < ipCount; i++) {
-            ipList[i] = "";
-        }
-        ipCount = 0;
+        ipList.clear();
     }
 
     public String getAnIP() {
-        String result = null;
-        if (ipCount > 0) {
-            result = ipList[0];
-            ipList[ipCount] = ipList[0];
-            ipCount++;
-            removeIP(ipList[0]);
-        }
+        String result = (String) ipList.get(0);
+        ipList.remove(0);
+        ipList.add(result);
         return result;
     }
 
