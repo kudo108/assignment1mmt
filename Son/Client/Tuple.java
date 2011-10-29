@@ -1,12 +1,12 @@
-
+package bitcrazy;
 
 /**
  *
- * @author CrazyTeam
+ * @author T'PHaM
  */
 public class Tuple {
-    private int    id       =   -1;
-    private String ip       = null;
+    private int          id =   -1;
+    private String       ip = null;
     private long   fileSize =   -1;
 
     public Tuple(int _id, String _ip, long _fileSize) {
