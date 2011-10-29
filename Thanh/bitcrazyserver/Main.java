@@ -8,11 +8,11 @@ import java.net.*;
  * @author T'PHaM
  */
 public class Main {
-    private static final String SAVE         = "lazycat";
-    private static final int    WELCOME_PORT =         33333;
+    private static final String         SAVE = "lazycat";
+    private static final int    WELCOME_PORT =     33333;
 
-    private static ServerSocket theServer    =          null;
-    private static TupleList    theTupleList =          null;
+    private static ServerSocket    theServer =      null;
+    private static TupleList    theTupleList =      null;
 
     public static void main(String[] args) {
         try {

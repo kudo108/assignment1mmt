@@ -8,26 +8,25 @@ import java.net.*;
  * @author T'PHaM
  */
 public class SocketHandler implements Runnable {
-    private static final String HELLO_INCOMMAND     = "HEL";
-    private static final String END_INCOMMAND       = "END";
-    private static final String GETFILE_INCOMMAND   = "GET";
-    private static final String RESEED_INCOMMAND    = "SSR";
+    private static final String     HELLO_INCOMMAND = "HEL";
+    private static final String       END_INCOMMAND = "END";
+    private static final String   GETFILE_INCOMMAND = "GET";
+    private static final String    RESEED_INCOMMAND = "SSR";
     private static final String STARTSEED_INCOMMAND = "SSN";
-    private static final String STOPSEED_INCOMMAND  = "SST";
-    private static final String STOPALL_INCOMMAND   = "SAL";
-    private static final String HELLO_OUTCOMMAND    = "HEL";
-    private static final String END_OUTCOMMAND      = "END";
+    private static final String  STOPSEED_INCOMMAND = "SST";
+    private static final String   STOPALL_INCOMMAND = "SAL";
+    private static final String    HELLO_OUTCOMMAND = "HEL";
+    private static final String      END_OUTCOMMAND = "END";
     private static final String NOTFOUND_OUTCOMMAND = "FNF";
-    private static final String CANTSEED_OUTCOMMAND = "NMO";
-    private static final String ID_OUTCOMMAND       = "TID";
-    private static final String OK_OUTCOMMAND       = "OKL";
-    private static final String INFO_OUTCOMMAND     = "INF";
+    private static final String       ID_OUTCOMMAND = "TID";
+    private static final String       OK_OUTCOMMAND = "OKL";
+    private static final String     INFO_OUTCOMMAND = "INF";
 
-    private Socket           theSocket    = null;
-    private TupleList        theTupleList = null;
-    private DataInputStream  streamIn     = null;
-    private DataOutputStream streamOut    = null;
-    private Thread           theThread    = null;
+    private              Socket           theSocket =  null;
+    private              TupleList     theTupleList =  null;
+    private              DataInputStream   streamIn =  null;
+    private              DataOutputStream streamOut =  null;
+    private              Thread           theThread =  null;
 
     public SocketHandler(Socket _socket, TupleList _tupleList) {
         theSocket    = _socket;
@@ -86,12 +85,8 @@ public class SocketHandler implements Runnable {
                 } else if (prefix.equals(RESEED_INCOMMAND)) {
                     String ip = getGuestIP();
                     int id = Integer.parseInt(getStringElem(receivedCommand, 2));
-                    boolean isOK = theTupleList.add(id, ip);
-                    if (isOK) {
-                        writeSocket(OK_OUTCOMMAND);
-                    } else {
-                        writeSocket(CANTSEED_OUTCOMMAND);
-                    }
+                    theTupleList.add(id, ip);
+                    writeSocket(OK_OUTCOMMAND);
                 } else if (prefix.equals(STOPSEED_INCOMMAND)) {
                     int id = Integer.parseInt(getStringElem(receivedCommand, 2));
                     String ip = getGuestIP();
