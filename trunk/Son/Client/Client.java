@@ -1,6 +1,4 @@
-
-
-
+package bitcrazy;
 
 import java.io.*;
 import java.net.*;
@@ -10,28 +8,26 @@ import java.net.*;
  * @author T'PHaM
  */
 public class Client {
-    private static final int    SERVER_PORT          = 33333;
-    private static final String HELLO_OUTCOMMAND     = "HEL";
-    private static final String END_OUTCOMMAND       = "END";
-    private static final String GETFILE_OUTCOMMAND   = "GET";
-    private static final String RESEED_OUTCOMMAND    = "SSR";
+    private static final int             SERVER_PORT = 33333;
+    private static final String     HELLO_OUTCOMMAND = "HEL";
+    private static final String       END_OUTCOMMAND = "END";
+    private static final String   GETFILE_OUTCOMMAND = "GET";
+    private static final String    RESEED_OUTCOMMAND = "SSR";
     private static final String STARTSEED_OUTCOMMAND = "SSN";
-    private static final String STOPSEED_OUTCOMMAND  = "SST";
-    private static final String STOPALL_OUTCOMMAND   = "SAL";
-    private static final String HELLO_INCOMMAND      = "HEL";
-    private static final String END_INCOMMAND        = "END";
-    private static final String NOTFOUND_INCOMMAND   = "FNF";
-//  private static final String CANTSEED_INCOMMAND   = "NMO";
-    private static final String ID_INCOMMAND         = "TID";
-    private static final String OK_INCOMMAND         = "OKL";
-    private static final String INFO_INCOMMAND       = "INF";
+    private static final String  STOPSEED_OUTCOMMAND = "SST";
+    private static final String   STOPALL_OUTCOMMAND = "SAL";
+    private static final String      HELLO_INCOMMAND = "HEL";
+    private static final String        END_INCOMMAND = "END";
+    private static final String   NOTFOUND_INCOMMAND = "FNF";
+    private static final String         ID_INCOMMAND = "TID";
+    private static final String         OK_INCOMMAND = "OKL";
+    private static final String       INFO_INCOMMAND = "INF";
 
-    private Socket           theSocket = null;
-    private DataInputStream  streamIn  = null;
-    private DataOutputStream streamOut = null;
+    private              Socket            theSocket =  null;
+    private              DataInputStream    streamIn =  null;
+    private              DataOutputStream  streamOut =  null;
 
     public Client(String _serverIP) {
-        super();
         try {
             theSocket = new Socket(_serverIP, SERVER_PORT);
             streamIn  = new DataInputStream(new
@@ -47,16 +43,20 @@ public class Client {
     }
 
     public boolean testServer() throws IOException {
-        boolean result = false;
-        writeSocket(HELLO_OUTCOMMAND);
-        String receivedCommand = readSocket();
-        if (receivedCommand.equals(HELLO_INCOMMAND)) {
-            result = true;
-            System.out.println("Connection to server successfully.");
-        } else {
-            System.out.println("Failed connecting to server.");
+        try {
+            boolean result = false;
+            writeSocket(HELLO_OUTCOMMAND);
+            String receivedCommand = readSocket();
+            if (receivedCommand.equals(HELLO_INCOMMAND)) {
+                result = true;
+                System.out.println("Connection to server successfully.");
+            } else {
+                System.out.println("Failed connecting to server.");
+            }
+            return result;
+        } catch (Exception e) {
+            return false;
         }
-        return result;
     }
 
     public Tuple getByID(int _id) throws IOException {
