@@ -23,6 +23,7 @@ public class DownloadManager {
         for(int i = 0; i < this.dlList.size(); i++){
             if(this.dlList.get(i).getID() == id && this.dlList.get(i).stillAlive()){
                 this.dlList.get(i).stop();
+                this.dlList.remove(i);
                 this.waiting();
                 return true;
             }

@@ -72,7 +72,11 @@ public class UploadManager{
          }   
         }
         //System.out.println("line 35/Server.java");
-        if(index != -1) threadlist.get(index).stop();//Tim ra tuc la thread da chay ( dang upload)=>stop
+        if(index != -1){
+            threadlist.get(index).stop();
+            threadlist.remove(index);
+        }//Tim ra tuc la thread da chay ( dang upload)=>stop
+        
         else return false;
         return true;
     }
