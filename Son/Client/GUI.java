@@ -1,3 +1,5 @@
+package bitcrazy;
+
 
 
 /**
@@ -30,7 +32,7 @@ public final class GUI extends javax.swing.JFrame {
     
     public UploadManager seeder;
     private DefaultTableModel model;
-    private ProgressRenderer renderer;
+//    private ProgressRenderer renderer;
     private int sltRow = 0;
     private int isExist = JOptionPane.OK_OPTION;
     private File selectedFile = null;
@@ -100,7 +102,8 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        addButton.setText("ADD");
+        addButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        addButton.setText("Upload...");
         addButton.setToolTipText("Click to add new file");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -108,7 +111,8 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        startButton.setText("START");
+        startButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        startButton.setText("Start");
         startButton.setToolTipText("Start seeding");
         startButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -167,7 +171,9 @@ public final class GUI extends javax.swing.JFrame {
         jScrollPane1.setViewportView(FileTable);
         FileTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        removeButton.setText("REMOVE");
+        removeButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        removeButton.setForeground(new java.awt.Color(204, 0, 0));
+        removeButton.setText("Remove");
         removeButton.setToolTipText("Remove the current row");
         removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -175,7 +181,8 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        addIDButton.setText("ADD ID");
+        addIDButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        addIDButton.setText("Download...");
         addIDButton.setToolTipText("Add new ID to download");
         addIDButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -183,7 +190,8 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        stopButton.setText("STOP");
+        stopButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        stopButton.setText("Stop");
         stopButton.setToolTipText("Stop seeding");
         stopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,9 +199,14 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Server IP");
+        IPField.setFont(new java.awt.Font("Courier New", 0, 11)); // NOI18N
+        IPField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
-        connectButton.setText("CONNECT");
+        jLabel2.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        jLabel2.setText("Server:");
+
+        connectButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        connectButton.setText("Set");
         connectButton.setToolTipText("Connect to server");
         connectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -205,29 +218,26 @@ public final class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(10, 10, 10)
-                                .addComponent(IPField))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(stopButton, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(removeButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(addIDButton))
-                            .addComponent(connectButton))))
+                        .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addIDButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(stopButton, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(removeButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(IPField, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(connectButton)))
                 .addContainerGap())
         );
 
@@ -237,23 +247,21 @@ public final class GUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addButton)
-                    .addComponent(startButton)
-                    .addComponent(stopButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(removeButton)
-                    .addComponent(addIDButton))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(stopButton)
+                    .addComponent(startButton)
+                    .addComponent(addIDButton)
+                    .addComponent(addButton)
+                    .addComponent(connectButton)
                     .addComponent(IPField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(connectButton))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addButton, addIDButton, connectButton, removeButton, startButton, stopButton});
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {IPField, addButton, addIDButton, connectButton, jLabel2, removeButton, startButton, stopButton});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
