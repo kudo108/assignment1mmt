@@ -5,7 +5,7 @@ package bitcrazy;
 /**
  *
  * @author CrazyTeam
- * Assigment 1 Computer Network - BitCrazy Application
+ * Assignment 1 Computer Network - BitCrazy Application
  */
 
 import javax.swing.*;
@@ -19,6 +19,7 @@ import java.awt.Component;
 public final class GUI extends javax.swing.JFrame {
 
     private static final String SAVE = "persist.bin";
+    private static final String SVIPSAVE = "activetiger";
     public static final int ID_COL = 0;
     public static final int NAME_COL = 1;
     public static final int SIZE_COL = 2;
@@ -46,7 +47,7 @@ public final class GUI extends javax.swing.JFrame {
         this.dl = dl;
         setLookandFeel();
         initComponents();
-        setDefaultIP();
+//        setDefaultIP();
         startButton.setEnabled(false);
         stopButton.setEnabled(false);
         removeButton.setEnabled(false);
@@ -78,7 +79,21 @@ public final class GUI extends javax.swing.JFrame {
         removeButton = new javax.swing.JButton();
         addIDButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
+        javax.swing.JTextField _ipField = null;
+        try {
+            FileInputStream ipfile = new FileInputStream(SVIPSAVE);
+            ObjectInputStream ipinput = new ObjectInputStream(ipfile);
+            _ipField = (javax.swing.JTextField) ipinput.readObject();
+            ipinput.close();
+            ipfile.close();
+            System.out.println("Server IP loaded!");
+        } catch (IOException ioe) {
+            _ipField = new javax.swing.JTextField();
+        } catch (ClassNotFoundException cnfe) {
+            _ipField = new javax.swing.JTextField();
+        }
         IPField = new javax.swing.JTextField();
+        IPField.setText(_ipField.getText());
         jLabel2 = new javax.swing.JLabel();
         connectButton = new javax.swing.JButton();
 
@@ -95,7 +110,7 @@ public final class GUI extends javax.swing.JFrame {
         });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("BitCrazy v1.0 - Computer Network - HCMUT");
+        setTitle("BitCrazy | Computer Network | HCMUT");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -480,6 +495,7 @@ private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             boolean success = client.testServer();
             if(success){
                 IPField.setEditable(false);
+                IPField.setEnabled(false);
                 connectButton.setEnabled(false);
                 addButton.setEnabled(true);
                 addIDButton.setEnabled(true);
@@ -515,7 +531,14 @@ private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:even
     }
 
     try {
-            FileOutputStream file  = new   FileOutputStream(SAVE);
+            FileOutputStream  ipfile = new FileOutputStream(SVIPSAVE);
+            ObjectOutputStream ipout = new   ObjectOutputStream(ipfile);
+            ipout.writeObject(IPField);
+            ipout.flush();
+            ipout.close();
+            ipfile.close();
+            
+            FileOutputStream  file = new   FileOutputStream(SAVE);
             ObjectOutputStream out = new ObjectOutputStream(file);
             out.writeObject(model.getDataVector());
             out.flush();
@@ -631,9 +654,9 @@ public int fileExist(){
     return isExist;
 }
 
-public void setDefaultIP(){
+/*public void setDefaultIP(){
     IPField.setText("localhost");
-}
+}*/
 public void setDefaultName(String name){
     fileSave.setSelectedFile(new File(name));
 }
