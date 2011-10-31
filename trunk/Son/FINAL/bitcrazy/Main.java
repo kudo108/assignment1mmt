@@ -1,5 +1,3 @@
-package bitcrazy;
-
 /*
  * Assignment 1 Computer Network 1 - University of Technology
  */

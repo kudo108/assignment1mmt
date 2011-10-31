@@ -1,9 +1,3 @@
-
-
-
-
-
-
 /**
  *
  * @author CrazyTeam
@@ -104,13 +98,14 @@ public final class GUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("BitCrazy | Computer Network | HCMUT");
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
         });
 
-        addButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        addButton.setFont(new java.awt.Font("Arial", 1, 11));
         addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/Button Add (Copy).png"))); // NOI18N
         addButton.setToolTipText("Click to add new file");
         addButton.setAlignmentY(0.0F);
@@ -124,7 +119,7 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        startButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        startButton.setFont(new java.awt.Font("Arial", 1, 11));
         startButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/Button Play (Copy).png"))); // NOI18N
         startButton.setToolTipText("Start seeding");
         startButton.setBorder(null);
@@ -170,11 +165,13 @@ public final class GUI extends javax.swing.JFrame {
             );
             System.out.println("Loading failed: " + cnfe.getMessage());
         }
-        FileTable.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
+        FileTable.setFont(new java.awt.Font("Arial", 0, 13));
         FileTable.setModel(model );
         FileTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        FileTable.setFocusable(false);
         FileTable.setName(""); // NOI18N
         FileTable.setRowHeight(20);
+        FileTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         FileTable.getTableHeader().setReorderingAllowed(false);
         FileTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -190,8 +187,6 @@ public final class GUI extends javax.swing.JFrame {
         FileTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         int max = (FileTable.getColumnModel().getColumn(ID_COL)).getMaxWidth();
         int min = (FileTable.getColumnModel().getColumn(ID_COL)).getMinWidth();
-        System.out.println(FileTable.getColumnModel().getColumn(SIZE_COL).getPreferredWidth());
-        System.out.println(min + " " + max);
         (FileTable.getColumnModel().getColumn(ID_COL)).setPreferredWidth(4);
         (FileTable.getColumnModel().getColumn(NAME_COL)).setPreferredWidth(150);
         (FileTable.getColumnModel().getColumn(SIZE_COL)).setPreferredWidth(75);
@@ -201,7 +196,7 @@ public final class GUI extends javax.swing.JFrame {
         (FileTable.getColumnModel().getColumn(LOCATION_COL)).setPreferredWidth(120);
         (FileTable.getColumnModel().getColumn(LIMIT_COL)).setPreferredWidth(50);
 
-        removeButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        removeButton.setFont(new java.awt.Font("Arial", 1, 11));
         removeButton.setForeground(new java.awt.Color(204, 0, 0));
         removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/Button-Close-icon (Copy).png"))); // NOI18N
         removeButton.setToolTipText("Remove the current row");
@@ -212,7 +207,7 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        addIDButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        addIDButton.setFont(new java.awt.Font("Arial", 1, 11));
         addIDButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/Button-Download-icon (Copy).png"))); // NOI18N
         addIDButton.setToolTipText("Add new ID to download");
         addIDButton.setBorder(null);
@@ -222,7 +217,7 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        stopButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        stopButton.setFont(new java.awt.Font("Arial", 1, 11));
         stopButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/Button Stop (Copy).png"))); // NOI18N
         stopButton.setToolTipText("Stop seeding");
         stopButton.setBorder(null);
@@ -235,10 +230,10 @@ public final class GUI extends javax.swing.JFrame {
         IPField.setFont(new java.awt.Font("Courier New", 0, 11));
         IPField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
 
-        jLabel2.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Arial", 1, 12));
         jLabel2.setText("Server:");
 
-        connectButton.setFont(new java.awt.Font("Arial", 1, 11));
+        connectButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
         connectButton.setText("Connect");
         connectButton.setToolTipText("Connect to server");
         connectButton.addActionListener(new java.awt.event.ActionListener() {
@@ -247,7 +242,7 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        limitButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
+        limitButton.setFont(new java.awt.Font("Arial", 1, 11));
         limitButton.setForeground(new java.awt.Color(0, 102, 204));
         limitButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/Download-icon (Copy).png"))); // NOI18N
         limitButton.setToolTipText("Limit the speed to <input> KB/s");
@@ -295,14 +290,14 @@ public final class GUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(IPField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(connectButton))))
+                                .addComponent(connectButton)))
+                        .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(addIDButton)
                     .addComponent(startButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(stopButton)
@@ -539,6 +534,7 @@ private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN
                 connectButton.setEnabled(false);
                 addButton.setEnabled(true);
                 addIDButton.setEnabled(true);
+                client.finish();
                 showInfMess(this,"Connect successfully to server");
             } else{
                 showWarningMess(this,"Server doesn't exist");

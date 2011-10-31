@@ -1,5 +1,3 @@
-package bitcrazy;
-
 /**
  *
  * @author NS

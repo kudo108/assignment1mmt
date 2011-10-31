@@ -1,13 +1,11 @@
-package bitcrazy;
-
 /**
  *
  * @author T'PHaM
  */
-public class StopClock {
+public class TimeMeter {
     private long lastTime = -1;
     
-    public StopClock() {
+    public TimeMeter() {
         lastTime = 0;
     }
     
@@ -26,7 +24,6 @@ public class StopClock {
             result = newTime - lastTime;
         }
         lastTime = newTime;
-        //System.out.println("StopClock.press(): " + result);
         return result;
     }
     
