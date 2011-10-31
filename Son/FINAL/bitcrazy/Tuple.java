@@ -1,7 +1,3 @@
-package bitcrazy;
-
-
-
 /**
  *
  * @author T'PHaM

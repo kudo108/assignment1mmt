@@ -1,5 +1,3 @@
-package bitcrazy;
-
 import java.net.*;
 import java.io.*;
 
@@ -87,16 +85,16 @@ public class FileUpload implements Runnable{
                     System.out.println("Client want to download from offSet = "+offSet);
                     int bytesRead = 0;
                     raf.seek(offSet);
-                    StopClock stopClock = new StopClock();
+                    TimeMeter time = new TimeMeter();
                     int byteThisTime = 4096;
-                    stopClock.press();
+                    time.press();
                     while((running && (bytesRead = raf.read(buffer, 0, byteThisTime)) >0) || (byteThisTime == 0))
                     {   
                         
                         /*Write file from offSet to leecher*/
                         if (bytesRead > 0) output.write(buffer,0,bytesRead);
                         if (sndspeed <= 0) byteThisTime = maxByteSendPerTime;
-                        else byteThisTime = (int) (stopClock.press() * sndspeed);
+                        else byteThisTime = (int) (time.press() * sndspeed);
                         if (byteThisTime > maxByteSendPerTime) byteThisTime = maxByteSendPerTime;
                         
 
