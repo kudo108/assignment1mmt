@@ -157,7 +157,7 @@ public final class GUI extends javax.swing.JFrame {
             }
         });
 
-        startButton.setFont(new java.awt.Font("Arial", 1, 11));
+        startButton.setFont(new java.awt.Font("Arial", 1, 11)); // NOI18N
         startButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icon/Button Play (Copy).png"))); // NOI18N
         startButton.setToolTipText("Start seeding");
         startButton.setBorder(null);
@@ -184,6 +184,7 @@ public final class GUI extends javax.swing.JFrame {
             input.close();
             file.close();
             System.out.println("Saved GUI loaded!");
+            refreshAfterLoadGUI();
         } catch (IOException ioe) {
             model = new DefaultTableModel(
                 new Object [][] {
@@ -205,10 +206,11 @@ public final class GUI extends javax.swing.JFrame {
         }
         FileTable.setFont(new java.awt.Font("Arial", 0, 13)); // NOI18N
         FileTable.setModel(model );
-        FileTable.setColumnSelectionAllowed(true);
         FileTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        FileTable.setFocusable(false);
         FileTable.setName(""); // NOI18N
         FileTable.setRowHeight(20);
+        FileTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         FileTable.getTableHeader().setReorderingAllowed(false);
         FileTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -379,6 +381,7 @@ private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     //Create a file chooser
     fileOpen.showOpenDialog(this);
     //And let it do the rest :D
+    saveGUI();
 }//GEN-LAST:event_addButtonActionPerformed
 /*
  * Hàm xử lí sự kiện nút REMOVE
@@ -409,9 +412,22 @@ private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
             
         }
             //just remove if status = Stopped...
-        model.removeRow(removedRow); 
+        model.removeRow(removedRow);
+        saveGUI();
     }
 }//GEN-LAST:event_removeButtonActionPerformed
+
+private void refreshAfterLoadGUI() {
+    for (int i = 0; i < model.getRowCount(); i++) {
+        if (model.getValueAt(i, STATUS_COL) != null) {
+            if (model.getValueAt(i, STATUS_COL).equals("Seeding")) {
+                model.setValueAt("StoppedSeeding", i, STATUS_COL);
+            } else if (model.getValueAt(i, STATUS_COL).equals("Downloading")) {
+                model.setValueAt("StoppedDownloading", i, STATUS_COL);
+            }
+        }
+    }
+}
 
 /*
  * Hàm xử lí sự kiện nút START
@@ -469,6 +485,7 @@ private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
                 this.resume(sltRow, IPServer);
                 
             }
+            saveGUI();
         }else{
             showWarningMess(this,"Please fill in Server IP field");
         }
@@ -576,6 +593,7 @@ private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                 }
                 else showErrorMess(this,"Cannot stop this file!");
             }
+            saveGUI();
         }else showWarningMess(this,"Please fill in the IP of server");
     }
 }//GEN-LAST:event_stopButtonActionPerformed
@@ -629,7 +647,12 @@ private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:even
 //        showMess(this,"Stop seeding all file : "+e.getMessage());
         System.exit(0);
     }
-    if(countRow() > 0){
+    saveGUI();
+
+}//GEN-LAST:event_formWindowClosing
+
+public void saveGUI() {
+        if(countRow() > 0){
         try {           
                 FileOutputStream  file = new   FileOutputStream(SAVE);
                 ObjectOutputStream out = new ObjectOutputStream(file);
@@ -642,8 +665,7 @@ private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:even
                 System.out.println("Error GUI saving: " + ioe.getMessage());
         }
     }
-
-}//GEN-LAST:event_formWindowClosing
+}
 
 private void FileTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FileTableMouseClicked
     TableAction();
@@ -891,7 +913,7 @@ public void setPath(String loc, int sltRow){
     FileTable.setValueAt(loc, sltRow, LOCATION_COL);
 }
 public void setProgress(int percent, int sltRow){
-    System.out.println(percent + " " + sltRow);
+//  System.out.println(percent + " " + sltRow);
     model.setValueAt(percent, sltRow, PROGRESS_COL);
     model.fireTableCellUpdated(sltRow, PROGRESS_COL);
     

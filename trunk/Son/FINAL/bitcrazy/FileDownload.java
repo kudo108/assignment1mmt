@@ -31,7 +31,7 @@ public class FileDownload implements Runnable{
             if(theTuple != null){//if there are at least 1 seeder (actually only 1 :P)
                 
                 //Connect server on port 5554
-                sk = new Socket(theTuple.getIP(),22221);
+                sk = new Socket(theTuple.getIP(),22222);
                
                 
                 //SpeedControler sc = new SpeedControler(sk);
@@ -70,8 +70,7 @@ public class FileDownload implements Runnable{
                     }
                     //Get the file to save
                     File file = UI.getSelectFile();
-                    
-                    if(file != null && (isResume ||UI.fileExist() == GUI.OK_CLICK)){
+                    if(isResume || (file != null &&UI.fileExist() == GUI.OK_CLICK)){
                     //if the file is exist and user want to overwrite it
                     //or the file isn't exist
                         
@@ -98,6 +97,7 @@ public class FileDownload implements Runnable{
                         if(isResume){
                             File interruptedFile = new File(path);
                             offSet = interruptedFile.length();
+                            file = interruptedFile;
                         }
                         //send offset to seeder
                         int rate = UI.getLimitCol(ID);
@@ -129,7 +129,7 @@ public class FileDownload implements Runnable{
                         //int rtt = SpeedControler.getRTT(theTuple.getIP());////
                         //System.out.println("RTT: " +  rtt);/////
                         //sk.setTcpNoDelay(true); /////
-                        
+                        UI.saveGUI();///Save the Table after add new download
                         while(running &&(bytesReceived = input.read(buffer))>0){
 //                            int dlspeed = UI.getLimitCol(ID);
 //                            spdctr.setDownSpeed(dlspeed);
