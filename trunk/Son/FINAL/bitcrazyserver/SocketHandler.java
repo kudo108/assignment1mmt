@@ -15,12 +15,14 @@ public class SocketHandler implements Runnable {
     private static final String STARTSEED_INCOMMAND = "SSN";
     private static final String  STOPSEED_INCOMMAND = "SST";
     private static final String   STOPALL_INCOMMAND = "SAL";
+    private static final String    GETALL_INCOMMAND = "GAL";
     private static final String    HELLO_OUTCOMMAND = "HEL";
     private static final String      END_OUTCOMMAND = "END";
     private static final String NOTFOUND_OUTCOMMAND = "FNF";
     private static final String       ID_OUTCOMMAND = "TID";
     private static final String       OK_OUTCOMMAND = "OKL";
     private static final String     INFO_OUTCOMMAND = "INF";
+    private static final String   GETALL_OUTCOMMAND = "HRE";
 
     private              Socket           theSocket =  null;
     private              TupleList     theTupleList =  null;
@@ -96,6 +98,9 @@ public class SocketHandler implements Runnable {
                     String ip = getGuestIP();
                     theTupleList.remove(ip);
                     writeSocket(OK_OUTCOMMAND);
+                } else if(prefix.equals(GETALL_INCOMMAND)) {
+                    String returnString = theTupleList.getThisList();
+                    writeSocket(GETALL_OUTCOMMAND + " " + returnString);
                 } else {
                     System.out.println("Unknown command received.");
                 }
