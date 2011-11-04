@@ -62,5 +62,14 @@ public class TupleList implements Serializable {
         }
         return result;
     }
+    
+    public String getThisList() {
+        String result = null;
+        result = String.format("%d \n", theList.size());
+        for (int i = 0; i < theList.size(); i++) {
+            result = result.concat(((Tuple) theList.get(i)).getThisTuple());
+        }
+        return result;
+    }
 
 }

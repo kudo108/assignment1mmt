@@ -8,14 +8,14 @@ import java.net.*;
  * @author T'PHaM
  */
 public class Main {
-//  private static final String         SAVE = "lazycat";
+    private static final String         SAVE = "lazycat";
     private static final int    WELCOME_PORT =     33333;
 
     private static ServerSocket    theServer =      null;
     private static TupleList    theTupleList =      null;
 
     public static void main(String[] args) {
-/*      try {
+        try {
             FileInputStream file = new FileInputStream(SAVE);
             ObjectInputStream input = new ObjectInputStream(file);
             theTupleList = (TupleList) input.readObject();
@@ -30,8 +30,7 @@ public class Main {
             theTupleList = new TupleList();
             System.out.println("Loading failed: " + cnfe.getMessage());
         }
- * 
- */     theTupleList = new TupleList();
+ //     theTupleList = new TupleList();
         try {
             theServer = new ServerSocket(WELCOME_PORT);
             System.out.println("Server socket created successfully: " + theServer);
@@ -44,8 +43,8 @@ public class Main {
                 System.out.println("Accepted new incoming socket: " + theSocket);
                 SocketHandler theSocketHandler = new SocketHandler(theSocket, theTupleList);
                 theSocketHandler.start();
-//              FileSaver theFileSaver = new FileSaver(SAVE, theTupleList);
-//              theFileSaver.start();
+                FileSaver theFileSaver = new FileSaver(SAVE, theTupleList);
+                theFileSaver.start();
             }
         } catch (IOException ioe) {
                 System.out.println("Error getting incoming connection: " + ioe.getMessage());

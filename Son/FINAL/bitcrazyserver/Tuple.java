@@ -51,5 +51,14 @@ public class Tuple implements Serializable {
         ipList.add(result);
         return result;
     }
+    
+    public String getThisTuple() {
+        String result = null;
+        result = String.format("%d %d %d \n", key, fileSize, ipList.size());
+        for (int i = 0; i < ipList.size(); i++) {
+            result = result.concat(String.format("%s \n", ipList.get(i)));
+        }
+        return result;
+    }
 
 }
